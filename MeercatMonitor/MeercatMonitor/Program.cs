@@ -9,7 +9,7 @@ if (res.IsSuccessStatusCode)
     var message = new MimeMessage();
     message.From.Add(new MailboxAddress("Mr. Meercat", "meercat@example.de"));
     message.To.Add(new MailboxAddress("Listening Meercats", "moedl.leonie@gmail.com"));
-    message.Subject = "How you doin'?";
+    message.Subject = "whatzz uuuup";
     Console.WriteLine("sending e mail uhuhu");
 
     message.Body = new TextPart("plain")
