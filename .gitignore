@@ -1,3 +1,4 @@
 .vs/
 /MeercatMonitor/MeercatMonitor/bin/
 /MeercatMonitor/MeercatMonitor/obj/
+/MeercatMonitor/MeercatMonitor/appsettings.development.json
