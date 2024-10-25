@@ -1,29 +1,35 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
 
-using HttpClient c = new HttpClient();
-HttpResponseMessage res = await c.GetAsync("https://ite-si.de");
-if (res.IsSuccessStatusCode)
-{
-    // send mail
-    var message = new MimeMessage();
-    message.From.Add(new MailboxAddress("Mr. Meercat", "meercat@example.de"));
-    message.To.Add(new MailboxAddress("Listening Meercats", "moedl.leonie@gmail.com"));
-    message.Subject = "whatzz uuuup";
-    Console.WriteLine("sending e mail uhuhu");
+var timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
 
-    message.Body = new TextPart("plain")
+while (await timer.WaitForNextTickAsync())
+{
+    using HttpClient c = new HttpClient();
+    HttpResponseMessage res = await c.GetAsync("https://ite-si.de");
+    if (res.IsSuccessStatusCode)
     {
-        Text = """
+        // send mail
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress("Mr. Meercat", "meercat@example.de"));
+        message.To.Add(new MailboxAddress("Listening Meercats", "moedl.leonie@gmail.com"));
+        message.Subject = "whatzz uuuup";
+        Console.WriteLine("sending e mail uhuhu");
+
+        message.Body = new TextPart("plain")
+        {
+            Text = """
                 Your website is down. lol
                 """
-    };
+        };
 
-    using (var client = new SmtpClient())
-    {
-        client.Connect("localhost", 25, useSsl: false);
+        using (var client = new SmtpClient())
+        {
+            client.Connect("localhost", 25, useSsl: false);
 
-        client.Send(message);
-        client.Disconnect(true);
+            client.Send(message);
+            client.Disconnect(true);
+        }
+
     }
 }
