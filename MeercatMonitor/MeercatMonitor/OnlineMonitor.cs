@@ -6,7 +6,7 @@ internal class OnlineMonitor(Config config)
     public event EventHandler<(string address, bool isOnline)>? WebsiteWentOffline;
 
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(config.CheckIntervalS));
-    private readonly string[] _websiteAddresses = config.WebsiteAddress;
+    private readonly string[] _websiteAddresses = config.WebsiteAddress.Distinct().ToArray();
     private readonly Dictionary<string, bool> _websiteStatus = [];
 
     public async Task StartAsync()
