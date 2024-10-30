@@ -2,8 +2,8 @@
 
 internal class OnlineMonitor(Config config)
 {
-    public event EventHandler<string>? WebsiteWentOnline;
-    public event EventHandler<string>? WebsiteWentOffline;
+    public event EventHandler<(string address, bool isOnline)>? WebsiteWentOnline;
+    public event EventHandler<(string address, bool isOnline)>? WebsiteWentOffline;
 
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(config.CheckIntervalS));
     private readonly string[] _websiteAddresses = config.WebsiteAddress;
@@ -37,11 +37,11 @@ internal class OnlineMonitor(Config config)
     {
         if (isOnline)
         {
-            WebsiteWentOnline?.Invoke(this, websiteAddress);
+            WebsiteWentOnline?.Invoke(this, (websiteAddress, isOnline));
         }
         else
         {
-            WebsiteWentOffline?.Invoke(this, websiteAddress);
+            WebsiteWentOffline?.Invoke(this, (websiteAddress, isOnline));
         }
     }
 }
