@@ -11,27 +11,38 @@ internal class OnlineMonitor(Config config)
 
     public async Task StartAsync()
     {
+        Console.WriteLine("starting monitoring...");
         do
         {
             using HttpClient c = new();
 
             foreach (var websiteAddress in _websiteAddresses)
             {
-                HttpResponseMessage res = await c.GetAsync(websiteAddress);
-                var isOnline = res.IsSuccessStatusCode;
-
-                if (!_websiteStatus.TryGetValue(websiteAddress, out var wasOnline))
+                Console.WriteLine($"checking {websiteAddress}...");
+                try
                 {
+                    HttpResponseMessage res = await c.GetAsync(websiteAddress);
+
+                    var isOnline = res.IsSuccessStatusCode;
+                    Console.WriteLine($"{websiteAddress} is {(isOnline ? "online" : "offline")}");
+
+                    if (!_websiteStatus.TryGetValue(websiteAddress, out var wasOnline))
+                    {
+                        _websiteStatus[websiteAddress] = isOnline;
+                        continue;
+                    }
+
+                    if (wasOnline != isOnline)
+                    {
+                        OnWebsiteStatusChanged(isOnline, websiteAddress);
+                    }
+
                     _websiteStatus[websiteAddress] = isOnline;
-                    continue;
                 }
-
-                if (wasOnline != isOnline)
+                catch (Exception ex) 
                 {
-                    OnWebsiteStatusChanged(isOnline, websiteAddress);
+                    Console.Error.WriteLine(ex.Message);
                 }
-
-                _websiteStatus[websiteAddress] = isOnline;
             }
         }
         while (await _timer.WaitForNextTickAsync());
