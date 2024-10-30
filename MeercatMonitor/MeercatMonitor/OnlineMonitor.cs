@@ -20,7 +20,11 @@ internal class OnlineMonitor(Config config)
                 HttpResponseMessage res = await c.GetAsync(websiteAddress);
                 var isOnline = res.IsSuccessStatusCode;
 
-                var wasOnline = _websiteStatus.TryGetValue(websiteAddress, out var status) ? status : false;
+                if (!_websiteStatus.TryGetValue(websiteAddress, out var wasOnline))
+                {
+                    _websiteStatus[websiteAddress] = isOnline;
+                    continue;
+                }
 
                 if (wasOnline != isOnline)
                 {
