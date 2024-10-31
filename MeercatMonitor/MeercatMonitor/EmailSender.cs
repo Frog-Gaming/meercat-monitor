@@ -3,7 +3,7 @@ using MimeKit;
 
 namespace MeercatMonitor;
 
-internal class EmailSender
+internal static class EmailSender
 {
     public static void Send(Config config, string websiteAddress, bool websiteIsOnline)
     {
