@@ -13,6 +13,7 @@ internal class EmailSender
         Send(message, config);
     }
 
+    // Distinct() is a workaround for duplicate config list values
     private static MimeMessage CreateMessage(MailAddress sender, MailAddress[] recipients) => CreateMessage(ConvertAddress(sender), recipients.Distinct().Select(ConvertAddress));
 
     private static MimeMessage CreateMessage(MailboxAddress sender, IEnumerable<MailboxAddress> recipients)
