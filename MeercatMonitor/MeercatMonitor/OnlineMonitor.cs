@@ -40,7 +40,7 @@ internal class OnlineMonitor(Config config)
 
                     _websiteStatus[websiteAddress] = isOnline;
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
                     Console.Error.WriteLine(ex.Message);
                 }
