@@ -61,8 +61,7 @@ internal static class EmailSender
     public static void SendTestEmail(Config config, string recipientAddress)
     {
         var message = CreateMessage(ConvertAddress(config.Sender), [new MailboxAddress(recipientAddress, recipientAddress)]);
-        message.Subject = "Meercat Monitor Test Email";
-        message.Body = new TextPart() { Text = "This is a test email from Meercat Monitor" };
+        SetMessageText(message, "<fake-website-for-testing>", websiteIsOnline: true);
 
         Send(message, config);
     }
