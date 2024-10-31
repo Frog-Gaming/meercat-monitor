@@ -22,7 +22,8 @@ internal class OnlineMonitor(Config config)
                 Console.WriteLine($"checking {websiteAddress}...");
                 try
                 {
-                    HttpResponseMessage res = await c.GetAsync(websiteAddress);
+                    HttpRequestMessage req = new(HttpMethod.Head, websiteAddress);
+                    HttpResponseMessage res = await c.SendAsync(req);
 
                     var isOnline = res.IsSuccessStatusCode;
                     Console.WriteLine($"{websiteAddress} is {(isOnline ? "online" : "offline")}");
