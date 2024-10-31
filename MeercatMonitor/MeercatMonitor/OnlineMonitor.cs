@@ -26,7 +26,7 @@ internal class OnlineMonitor(Config config)
                     HttpResponseMessage res = await c.SendAsync(req);
 
                     var isOnline = res.IsSuccessStatusCode;
-                    Console.WriteLine($"{websiteAddress} is {(isOnline ? "online" : "offline")}");
+                    Console.WriteLine($"{websiteAddress} is {(isOnline ? "online" : "offline")} (response code {(int)res.StatusCode} {res.StatusCode})");
 
                     if (!_websiteStatus.TryGetValue(websiteAddress, out var wasOnline))
                     {
