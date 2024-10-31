@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "MeercatMonitor": {
+      "commandName": "Project"
+    },
+    "Send Test Email": {
+      "commandName": "Project",
+      "commandLineArgs": "--testemail=test@example.org"
+    }
+  }
+}
