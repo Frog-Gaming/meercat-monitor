@@ -8,8 +8,8 @@ internal class OnlineMonitor(Config config)
     public event EventHandler<(string address, bool isOnline)>? WebsiteWentOffline;
 
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(config.CheckIntervalS));
-    // Distinct() is a workaround for duplicate config list values
-    private readonly string[] _websiteAddresses = config.WebsiteAddress.Distinct().ToArray();
+    // Distinct() across groups and also work around duplicate config list values
+    private readonly string[] _websiteAddresses = config.Monitors.SelectMany(x => x.Addresses).Distinct().ToArray();
     private readonly Dictionary<string, bool> _websiteStatus = [];
 
     public async Task StartAsync()

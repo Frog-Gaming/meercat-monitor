@@ -7,14 +7,15 @@ internal static class EmailSender
 {
     public static void Send(Config config, string websiteAddress, bool websiteIsOnline)
     {
-        var message = CreateMessage(config.Sender, config.Recipient);
+        // Distinct() across groups and as a workaround for duplicate config list values
+        var recipients = config.Monitors.Where(x => x.Addresses.Contains(websiteAddress)).SelectMany(x => x.Recipients).Distinct().ToArray();
+        var message = CreateMessage(config.Sender, recipients);
         SetMessageText(message, websiteAddress, websiteIsOnline);
 
         Send(message, config);
     }
 
-    // Distinct() is a workaround for duplicate config list values
-    private static MimeMessage CreateMessage(MailAddress sender, MailAddress[] recipients) => CreateMessage(ConvertAddress(sender), recipients.Distinct().Select(ConvertAddress));
+    private static MimeMessage CreateMessage(MailAddress sender, MailAddress[] recipients) => CreateMessage(ConvertAddress(sender), recipients.Select(ConvertAddress));
 
     private static MimeMessage CreateMessage(MailboxAddress sender, IEnumerable<MailboxAddress> recipients)
     {
