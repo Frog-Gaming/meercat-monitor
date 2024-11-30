@@ -1,0 +1,11 @@
+<Project>
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageVersion Include="MailKit" Version="4.8.0" />
+		<PackageVersion Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+		<PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+		<PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+	</ItemGroup>
+</Project>
