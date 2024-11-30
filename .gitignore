@@ -1,6 +1,4 @@
 .vs/
 *.csproj.user
 /artifacts/
-/MeercatMonitor/MeercatMonitor/bin/
-/MeercatMonitor/MeercatMonitor/obj/
-/MeercatMonitor/MeercatMonitor/appsettings.development.json
+/MeercatMonitor/appsettings.development.json
