@@ -63,7 +63,7 @@ internal static class EmailSender
     public static void SendTestEmail(Config config, string recipientAddress)
     {
         var message = CreateMessage(ConvertAddress(config.Sender), [new MailboxAddress(recipientAddress, recipientAddress)]);
-        Texts texts = new Texts(
+        var texts = new Texts(
             SubjWentOnline: "GAWWK GAWWK your website is up again",
             SubjWentOffline: "GAWWK GAWWK your website is down",
             BodyWentOnline: "🐿️🥜 Your website {websiteAddress} is up again. lol 👌",
