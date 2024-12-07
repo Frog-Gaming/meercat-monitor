@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
-    .WriteTo.Console()
+    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}")
     .CreateLogger();
 
 var config = LoadConfigFile();
