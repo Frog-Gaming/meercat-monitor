@@ -38,7 +38,7 @@ internal class OnlineMonitor(Config config)
         }
         else
         {
-            Log.Error("Unknown protocol on {WebsiteAddress}", websiteAddress);
+            Log.Warning("Unknown protocol on {WebsiteAddress}", websiteAddress);
         }
     }
 
@@ -59,7 +59,7 @@ internal class OnlineMonitor(Config config)
         }
         catch (Exception ex)
         {
-            Log.Error(ex, ex.Message);
+            Log.Warning(ex, ex.Message);
 
             UpdateStatus(websiteAddress, isOnline: false);
         }
@@ -82,13 +82,13 @@ internal class OnlineMonitor(Config config)
         catch (SocketException ex)
         {
             // Socket error codes see https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
-            Log.Error(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}, socket error code {ErrorCode}", hostname, port, ex.Message, ex.ErrorCode);
+            Log.Warning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}, socket error code {ErrorCode}", hostname, port, ex.Message, ex.ErrorCode);
 
             UpdateStatus(websiteAddress, isOnline: false);
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}", hostname, port, ex.Message);
+            Log.Warning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}", hostname, port, ex.Message);
 
             UpdateStatus(websiteAddress, isOnline: false);
         }
