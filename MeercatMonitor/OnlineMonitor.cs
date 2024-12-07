@@ -14,7 +14,7 @@ internal class OnlineMonitor(Config config)
 
     public async Task StartAsync()
     {
-        Log.Information("Starting monitoring of [{MonitorTargets}]…", string.Join(",", _websiteAddresses));
+        Log.Information("Starting monitoring of ({MonitorTargetCount}) [{MonitorTargets}]…", _websiteAddresses.Length, string.Join(",", _websiteAddresses));
         do
         {
             foreach (var websiteAddress in _websiteAddresses)
