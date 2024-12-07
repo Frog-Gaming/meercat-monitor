@@ -7,12 +7,15 @@ internal static class EmailSender
 {
     public static void Send(Config config, string websiteAddress, bool websiteIsOnline)
     {
-        // Distinct() across groups and as a workaround for duplicate config list values
-        var recipients = config.Monitors.Where(x => x.Addresses.Contains(websiteAddress)).SelectMany(x => x.Recipients).Distinct().ToArray();
-        var message = CreateMessage(config.Sender, recipients);
-        SetMessageText(message, websiteAddress, websiteIsOnline);
+        foreach (var monitor in config.Monitors.Where(x => x.Addresses.Contains(websiteAddress)))
+        {
+            // Distinct() as a workaround for duplicate config list values
+            var recipients = monitor.Recipients.Distinct().ToArray();
+            var message = CreateMessage(config.Sender, recipients);
+            SetMessageText(message, websiteAddress, websiteIsOnline, monitor.Texts);
 
-        Send(message, config);
+            Send(message, config);
+        }
     }
 
     private static MimeMessage CreateMessage(MailAddress sender, MailAddress[] recipients) => CreateMessage(ConvertAddress(sender), recipients.Select(ConvertAddress));
@@ -27,16 +30,14 @@ internal static class EmailSender
 
     private static MailboxAddress ConvertAddress(MailAddress addr) => new(addr.Name, addr.Address);
 
-    private static void SetMessageText(MimeMessage message, string websiteAddress, bool websiteIsOnline)
+    private static void SetMessageText(MimeMessage message, string websiteAddress, bool websiteIsOnline, Texts texts)
     {
-        message.Subject = $"GAWWK GAWWK your website is {(websiteIsOnline ? "up again ✅" : "down 🛑")}";
+        message.Subject = websiteIsOnline ? texts.SubjWentOnline : texts.SubjWentOffline;
 
+        string bodyText = (websiteIsOnline ? texts.BodyWentOnline : texts.BodyWentOffline).Replace("{websiteAddress}", websiteAddress);
         message.Body = new TextPart("plain")
         {
-            Text = $"""
-                🐿️🥜
-                Your website {websiteAddress} is {(websiteIsOnline ? "up again ✅" : "down 🛑")}. lol 👌
-                """
+            Text = bodyText,
         };
     }
 
@@ -62,7 +63,13 @@ internal static class EmailSender
     public static void SendTestEmail(Config config, string recipientAddress)
     {
         var message = CreateMessage(ConvertAddress(config.Sender), [new MailboxAddress(recipientAddress, recipientAddress)]);
-        SetMessageText(message, "<fake-website-for-testing>", websiteIsOnline: true);
+        Texts texts = new Texts(
+            SubjWentOnline: "GAWWK GAWWK your website is up again",
+            SubjWentOffline: "GAWWK GAWWK your website is down",
+            BodyWentOnline: "🐿️🥜 Your website {websiteAddress} is up again. lol 👌",
+            BodyWentOffline: "🐿️🥜 Your website {websiteAddress} is down. lol 👌"
+        );
+        SetMessageText(message, "<fake-website-for-testing>", websiteIsOnline: true, texts);
 
         Send(message, config);
     }
