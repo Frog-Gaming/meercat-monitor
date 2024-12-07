@@ -1,13 +1,38 @@
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
-[*.{json,props,csproj}]
-# Indentation and spacing
+[*.json]
 indent_size = 2
 indent_style = space
 tab_width = 2
+end_of_line = crlf
+insert_final_newline = true
 
-# New line preferences
+[*.json]
+indent_size = 2
+indent_style = space
+tab_width = 2
+end_of_line = crlf
+insert_final_newline = true
+
+[*.props]
+indent_size = 2
+indent_style = space
+tab_width = 2
+end_of_line = crlf
+insert_final_newline = true
+
+[*.csproj]
+indent_size = 2
+indent_style = space
+tab_width = 2
+end_of_line = crlf
+insert_final_newline = true
+
+[nuget.config]
+indent_size = 2
+indent_style = space
+tab_width = 2
 end_of_line = crlf
 insert_final_newline = true
 
