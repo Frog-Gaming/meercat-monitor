@@ -6,7 +6,7 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
-var config = new ConfigurationBuilder().AddJsonFile(File.Exists("appsettings.development.json") ? "appsettings.development.json" : "appsettings.json").Build().Get<Config>() ?? throw new InvalidOperationException();
+var config = LoadConfigFile();
 
 var testArg = "--testemail=";
 if (args.Length > 0 && args[0].StartsWith(testArg))
@@ -24,3 +24,14 @@ monitor.WebsiteWentOffline += (sender, ev) => EmailSender.Send(config, ev.addres
 await monitor.StartAsync();
 
 await Log.CloseAndFlushAsync();
+
+static Config LoadConfigFile()
+{
+    var configFile = File.Exists("appsettings.development.json") ? "appsettings.development.json" : "appsettings.json";
+
+    return new ConfigurationBuilder()
+        .AddJsonFile(configFile)
+        .Build()
+        // We are missing out on configuration validation here. We should make use of ErrorOnUnknownConfiguration but also ensure that no expected required configuration is missing.
+        .Get<Config>() ?? throw new InvalidOperationException();
+}
