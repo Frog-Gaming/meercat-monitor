@@ -56,7 +56,7 @@ internal static class EmailSender
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Exception during email send: {ex.Message}");
+            Log.Error(ex, "Exception during email send: {Message}", ex.Message);
         }
     }
 

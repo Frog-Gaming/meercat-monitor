@@ -14,7 +14,7 @@ internal class OnlineMonitor(Config config)
 
     public async Task StartAsync()
     {
-        Console.WriteLine("starting monitoring...");
+        Log.Information("Starting monitoring…");
         do
         {
             foreach (var websiteAddress in _websiteAddresses)
@@ -37,13 +37,13 @@ internal class OnlineMonitor(Config config)
         }
         else
         {
-            Console.Error.WriteLine($"Unknown protocol on {websiteAddress}");
+            Log.Error("Unknown protocol on {WebsiteAddress}", websiteAddress);
         }
     }
 
     private async Task CheckHttpAsync(string websiteAddress)
     {
-        Console.WriteLine($"checking {websiteAddress}...");
+        Log.Debug("Checking {WebsiteAddress}…", websiteAddress);
 
         try
         {
@@ -58,7 +58,7 @@ internal class OnlineMonitor(Config config)
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine(ex.Message);
+            Log.Error(ex, ex.Message);
 
             UpdateStatus(websiteAddress, isOnline: false);
         }
@@ -67,7 +67,7 @@ internal class OnlineMonitor(Config config)
     private async Task CheckFtpAsync(string websiteAddress)
     {
         var (hostname, port) = ParseFtpAddress(websiteAddress);
-        Console.WriteLine($"Testing FTP (TCP) {hostname}:{port}…");
+        Log.Debug("Testing FTP (TCP) {Hostname}:{Port}…", hostname, port);
 
         try
         {
@@ -81,13 +81,13 @@ internal class OnlineMonitor(Config config)
         catch (SocketException ex)
         {
             // Socket error codes see https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
-            Console.Error.WriteLine($"Failed to connect to ftp (tcp) {hostname}:{port}; Exception Message: {ex.Message}, socket error code {ex.ErrorCode}");
+            Log.Error(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}, socket error code {ErrorCode}", hostname, port, ex.Message, ex.ErrorCode);
 
             UpdateStatus(websiteAddress, isOnline: false);
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Failed to connect to ftp (tcp) {hostname}:{port}; Exception Message: {ex.Message}");
+            Log.Error(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}", hostname, port, ex.Message);
 
             UpdateStatus(websiteAddress, isOnline: false);
         }
@@ -105,7 +105,7 @@ internal class OnlineMonitor(Config config)
 
     private void UpdateStatus(string websiteAddress, bool isOnline)
     {
-        Console.WriteLine($"{websiteAddress} is {(isOnline ? "online" : "offline")}");
+        Log.Debug("{WebsiteAddress} is {Status}", websiteAddress, isOnline ? "online" : "offline");
 
         // Ignore the first visit - we only have online status *change* events
         if (!_websiteStatus.TryGetValue(websiteAddress, out var wasOnline))
