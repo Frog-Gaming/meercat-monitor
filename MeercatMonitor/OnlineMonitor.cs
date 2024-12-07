@@ -17,6 +17,7 @@ internal class OnlineMonitor(Config config)
         Log.Information("Starting monitoring of ({MonitorTargetCount}) [{MonitorTargets}]…", _websiteAddresses.Length, string.Join(",", _websiteAddresses));
         do
         {
+            Log.Information("Checking {MonitorTargetCount} targets…", _websiteAddresses.Length);
             foreach (var websiteAddress in _websiteAddresses)
             {
                 await CheckAddressAsync(websiteAddress);
