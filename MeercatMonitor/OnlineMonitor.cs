@@ -59,7 +59,7 @@ internal class OnlineMonitor(Config config)
         }
         catch (Exception ex)
         {
-            Log.Warning(ex, ex.Message);
+            Log.Warning(ex, "HTTP {WebsiteAddress} failed the uptime check with exception {ExceptionMessage}", websiteAddress, ex.Message + ex.InnerException?.Message);
 
             UpdateStatus(websiteAddress, isOnline: false);
         }
