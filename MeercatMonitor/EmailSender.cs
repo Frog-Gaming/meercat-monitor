@@ -39,7 +39,7 @@ internal class EmailSender
 
     private static void SetMessageText(MimeMessage message, string websiteAddress, bool websiteIsOnline, Texts texts)
     {
-        message.Subject = websiteIsOnline ? texts.SubjWentOnline : texts.SubjWentOffline;
+        message.Subject = (websiteIsOnline ? texts.SubjWentOnline : texts.SubjWentOffline).Replace("{websiteAddress}", websiteAddress);
 
         var builder = new BodyBuilder();
         if (websiteIsOnline && texts.BodyPlainWentOnline is not null)
@@ -84,8 +84,8 @@ internal class EmailSender
     {
         var message = CreateMessage(ConvertAddress(config.Sender), [new MailboxAddress(recipientAddress, recipientAddress)]);
         var texts = new Texts(
-            SubjWentOnline: "GAWWK GAWWK your website is up again",
-            SubjWentOffline: "GAWWK GAWWK your website is down",
+            SubjWentOnline: "GAWWK GAWWK your website {websiteAddress} is up again",
+            SubjWentOffline: "GAWWK GAWWK your website {websiteAddress} is down",
             BodyPlainWentOnline: "🐿️🥜 Your website {websiteAddress} is up again. lol 👌",
             BodyPlainWentOffline: "🐿️🥜 Your website {websiteAddress} is down. lol 👌",
             BodyHtmlWentOnline: "<p>🐿️🥜 Your website {websiteAddress} is <strong>up</strong> again. lol 👌</p>",
