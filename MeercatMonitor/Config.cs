@@ -7,4 +7,4 @@ public record MonitorGroup(string[] Addresses, MailAddress[] Recipients, Texts T
 public record MailAddress(string Name, string Address);
 public record MailServer(string Address, int Port, bool IgnoreCertValidation = true);
 
-public record Texts(string SubjWentOnline, string SubjWentOffline, string BodyWentOnline, string BodyWentOffline);
+public record Texts(string SubjWentOnline, string SubjWentOffline, string BodyPlainWentOnline, string BodyPlainWentOffline, string BodyHtmlWentOnline, string BodyHtmlWentOffline);

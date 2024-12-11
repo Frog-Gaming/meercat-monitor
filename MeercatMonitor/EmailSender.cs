@@ -41,11 +41,12 @@ internal class EmailSender
     {
         message.Subject = websiteIsOnline ? texts.SubjWentOnline : texts.SubjWentOffline;
 
-        string bodyText = (websiteIsOnline ? texts.BodyWentOnline : texts.BodyWentOffline).Replace("{websiteAddress}", websiteAddress);
-        message.Body = new TextPart("plain")
-        {
-            Text = bodyText,
-        };
+        string bodyPlain = (websiteIsOnline ? texts.BodyPlainWentOnline : texts.BodyPlainWentOffline).Replace("{websiteAddress}", websiteAddress);
+        string bodyHtml = (websiteIsOnline ? texts.BodyHtmlWentOnline : texts.BodyHtmlWentOffline).Replace("{websiteAddress}", websiteAddress);
+        var builder = new BodyBuilder();
+        builder.TextBody = bodyPlain;
+        builder.HtmlBody = bodyHtml;
+        message.Body = builder.ToMessageBody();
     }
 
     private static void Send(MimeMessage message, Config config)
@@ -73,8 +74,10 @@ internal class EmailSender
         var texts = new Texts(
             SubjWentOnline: "GAWWK GAWWK your website is up again",
             SubjWentOffline: "GAWWK GAWWK your website is down",
-            BodyWentOnline: "🐿️🥜 Your website {websiteAddress} is up again. lol 👌",
-            BodyWentOffline: "🐿️🥜 Your website {websiteAddress} is down. lol 👌"
+            BodyPlainWentOnline: "🐿️🥜 Your website {websiteAddress} is up again. lol 👌",
+            BodyPlainWentOffline: "🐿️🥜 Your website {websiteAddress} is down. lol 👌",
+            BodyHtmlWentOnline: "<p>🐿️🥜 Your website {websiteAddress} is <strong>up</strong> again. lol 👌</p>",
+            BodyHtmlWentOffline: "<p>🐿️🥜 Your website {websiteAddress} is <strong>down</strong>. lol 👌</p>"
         );
         SetMessageText(message, "<fake-website-for-testing>", websiteIsOnline: true, texts);
 
