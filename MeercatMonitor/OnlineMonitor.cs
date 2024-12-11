@@ -1,8 +1,9 @@
-﻿using System.Net.Sockets;
+﻿using Microsoft.Extensions.Hosting;
+using System.Net.Sockets;
 
 namespace MeercatMonitor;
 
-internal class OnlineMonitor(Config config)
+internal class OnlineMonitor(Config config) : BackgroundService
 {
     public event EventHandler<(string address, bool isOnline)>? WebsiteWentOnline;
     public event EventHandler<(string address, bool isOnline)>? WebsiteWentOffline;
@@ -11,20 +12,6 @@ internal class OnlineMonitor(Config config)
     // Distinct() across groups and also work around duplicate config list values
     private readonly string[] _websiteAddresses = config.Monitors.SelectMany(x => x.Addresses).Distinct().ToArray();
     private readonly Dictionary<string, bool> _websiteStatus = [];
-
-    public async Task StartAsync()
-    {
-        Log.Information("Starting monitoring of ({MonitorTargetCount}) [{MonitorTargets}]…", _websiteAddresses.Length, string.Join(",", _websiteAddresses));
-        do
-        {
-            Log.Information("Checking {MonitorTargetCount} targets…", _websiteAddresses.Length);
-            foreach (var websiteAddress in _websiteAddresses)
-            {
-                await CheckAddressAsync(websiteAddress);
-            }
-        }
-        while (await _timer.WaitForNextTickAsync());
-    }
 
     private async Task CheckAddressAsync(string websiteAddress)
     {
@@ -133,5 +120,20 @@ internal class OnlineMonitor(Config config)
         {
             WebsiteWentOffline?.Invoke(this, (websiteAddress, isOnline));
         }
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        Log.Information("Starting monitoring of ({MonitorTargetCount}) [{MonitorTargets}]…", _websiteAddresses.Length, string.Join(",", _websiteAddresses));
+        do
+        {
+            Log.Information("Checking {MonitorTargetCount} targets…", _websiteAddresses.Length);
+            foreach (var websiteAddress in _websiteAddresses)
+            {
+                await CheckAddressAsync(websiteAddress);
+            }
+        }
+        while (await _timer.WaitForNextTickAsync(stoppingToken) && !stoppingToken.IsCancellationRequested);
+        Log.Debug("Stopped monitoring");
     }
 }

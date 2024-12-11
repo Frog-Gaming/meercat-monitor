@@ -1,29 +1,30 @@
 ﻿using MeercatMonitor;
 using Microsoft.Extensions.Configuration;
-
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}")
-    .CreateLogger();
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var config = LoadConfigFile();
 
 var testArg = "--testemail=";
 if (args.Length > 0 && args[0].StartsWith(testArg))
 {
+    using var logger = CreateLogger();
     var recipient = args[0][testArg.Length..];
-    Log.Information("Sending test email to {Recipient}…", recipient);
+    logger.Information("Sending test email to {Recipient}…", recipient);
     EmailSender.SendTestEmail(config, recipient);
-    Log.Information("Sent test email to {Recipient}.", recipient);
+    logger.Information("Sent test email to {Recipient}.", recipient);
     return;
 }
 
-var monitor = new OnlineMonitor(config);
-monitor.WebsiteWentOnline += (sender, ev) => EmailSender.Send(config, ev.address, ev.isOnline);
-monitor.WebsiteWentOffline += (sender, ev) => EmailSender.Send(config, ev.address, ev.isOnline);
-await monitor.StartAsync();
+HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddHostedService<OnlineMonitor>();
+builder.Services.AddSingleton<EmailSender>();
+builder.Services.AddSerilog(ConfigureLogger);
+builder.Services.AddSingleton(config);
 
-await Log.CloseAndFlushAsync();
+IHost host = builder.Build();
+await host.RunAsync();
+
 
 static Config LoadConfigFile()
 {
@@ -34,4 +35,15 @@ static Config LoadConfigFile()
         .Build()
         // We are missing out on configuration validation here. We should make use of ErrorOnUnknownConfiguration but also ensure that no expected required configuration is missing.
         .Get<Config>() ?? throw new InvalidOperationException();
+}
+
+static void ConfigureLogger(LoggerConfiguration x) => x
+    .MinimumLevel.Debug()
+    .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}");
+
+static Serilog.Core.Logger CreateLogger()
+{
+    var loggerConfiguration = new LoggerConfiguration();
+    ConfigureLogger(loggerConfiguration);
+    return loggerConfiguration.CreateLogger();
 }

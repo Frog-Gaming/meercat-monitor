@@ -3,8 +3,15 @@ using MimeKit;
 
 namespace MeercatMonitor;
 
-internal static class EmailSender
+internal class EmailSender
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "False-positive")]
+    public EmailSender(OnlineMonitor onlineMonitor, Config config)
+    {
+        onlineMonitor.WebsiteWentOnline += (sender, ev) => Send(config, ev.address, ev.isOnline);
+        onlineMonitor.WebsiteWentOffline += (sender, ev) => Send(config, ev.address, ev.isOnline);
+    }
+
     public static void Send(Config config, string websiteAddress, bool websiteIsOnline)
     {
         foreach (var monitor in config.Monitors.Where(x => x.Addresses.Contains(websiteAddress)))
