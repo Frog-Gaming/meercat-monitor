@@ -41,11 +41,23 @@ internal class EmailSender
     {
         message.Subject = websiteIsOnline ? texts.SubjWentOnline : texts.SubjWentOffline;
 
-        string bodyPlain = (websiteIsOnline ? texts.BodyPlainWentOnline : texts.BodyPlainWentOffline).Replace("{websiteAddress}", websiteAddress);
-        string bodyHtml = (websiteIsOnline ? texts.BodyHtmlWentOnline : texts.BodyHtmlWentOffline).Replace("{websiteAddress}", websiteAddress);
         var builder = new BodyBuilder();
-        builder.TextBody = bodyPlain;
-        builder.HtmlBody = bodyHtml;
+        if (websiteIsOnline && texts.BodyPlainWentOnline is not null)
+        {
+            builder.TextBody = texts.BodyPlainWentOnline.Replace("{websiteAddress}", websiteAddress);
+        }
+        if (!websiteIsOnline && texts.BodyPlainWentOffline is not null)
+        {
+            builder.TextBody = texts.BodyPlainWentOffline.Replace("{websiteAddress}", websiteAddress);
+        }
+        if (websiteIsOnline && texts.BodyHtmlWentOnline is not null)
+        {
+            builder.HtmlBody = texts.BodyHtmlWentOnline.Replace("{websiteAddress}", websiteAddress);
+        }
+        if (!websiteIsOnline && texts.BodyHtmlWentOffline is not null)
+        {
+            builder.HtmlBody = texts.BodyHtmlWentOffline.Replace("{websiteAddress}", websiteAddress);
+        }
         message.Body = builder.ToMessageBody();
     }
 
