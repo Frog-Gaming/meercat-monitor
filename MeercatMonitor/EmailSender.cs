@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
+using System.Net;
 
 namespace MeercatMonitor;
 
@@ -50,13 +51,14 @@ internal class EmailSender
         {
             builder.TextBody = texts.BodyPlainWentOffline.Replace("{websiteAddress}", websiteAddress);
         }
+        var websiteAddressHtmlEscaped = WebUtility.HtmlEncode(websiteAddress);
         if (websiteIsOnline && texts.BodyHtmlWentOnline is not null)
         {
-            builder.HtmlBody = texts.BodyHtmlWentOnline.Replace("{websiteAddress}", websiteAddress);
+            builder.HtmlBody = texts.BodyHtmlWentOnline.Replace("{websiteAddress}", websiteAddressHtmlEscaped);
         }
         if (!websiteIsOnline && texts.BodyHtmlWentOffline is not null)
         {
-            builder.HtmlBody = texts.BodyHtmlWentOffline.Replace("{websiteAddress}", websiteAddress);
+            builder.HtmlBody = texts.BodyHtmlWentOffline.Replace("{websiteAddress}", websiteAddressHtmlEscaped);
         }
         message.Body = builder.ToMessageBody();
     }
