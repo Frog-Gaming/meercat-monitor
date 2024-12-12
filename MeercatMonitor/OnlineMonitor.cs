@@ -3,11 +3,8 @@ using System.Net.Sockets;
 
 namespace MeercatMonitor;
 
-internal class OnlineMonitor(Config config) : BackgroundService
+internal class OnlineMonitor(Config config, NotificationService _notify) : BackgroundService
 {
-    public event EventHandler<(string address, bool isOnline)>? WebsiteWentOnline;
-    public event EventHandler<(string address, bool isOnline)>? WebsiteWentOffline;
-
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(config.CheckIntervalS));
     // Distinct() across groups and also work around duplicate config list values
     private readonly string[] _websiteAddresses = config.Monitors.SelectMany(x => x.Addresses).Distinct().ToArray();
@@ -104,22 +101,10 @@ internal class OnlineMonitor(Config config) : BackgroundService
 
         if (wasOnline != isOnline)
         {
-            OnWebsiteStatusChanged(isOnline, websiteAddress);
+            _notify.HandleStatusChange(websiteAddress, isOnline);
         }
 
         _websiteStatus[websiteAddress] = isOnline;
-    }
-
-    private void OnWebsiteStatusChanged(bool isOnline, string websiteAddress)
-    {
-        if (isOnline)
-        {
-            WebsiteWentOnline?.Invoke(this, (websiteAddress, isOnline));
-        }
-        else
-        {
-            WebsiteWentOffline?.Invoke(this, (websiteAddress, isOnline));
-        }
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

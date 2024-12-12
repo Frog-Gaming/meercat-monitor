@@ -18,6 +18,7 @@ if (args.Length > 0 && args[0].StartsWith(testArg))
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<OnlineMonitor>();
+builder.Services.AddSingleton<NotificationService>();
 builder.Services.AddSingleton<EmailSender>();
 builder.Services.AddSerilog(ConfigureLogger);
 builder.Services.AddSingleton(config);

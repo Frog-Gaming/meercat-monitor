@@ -4,25 +4,18 @@ using System.Net;
 
 namespace MeercatMonitor;
 
-internal class EmailSender
+internal class EmailSender(Config _config)
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "False-positive")]
-    public EmailSender(OnlineMonitor onlineMonitor, Config config)
+    public void SendFor(string websiteAddress, bool isOnline)
     {
-        onlineMonitor.WebsiteWentOnline += (sender, ev) => Send(config, ev.address, ev.isOnline);
-        onlineMonitor.WebsiteWentOffline += (sender, ev) => Send(config, ev.address, ev.isOnline);
-    }
-
-    public static void Send(Config config, string websiteAddress, bool websiteIsOnline)
-    {
-        foreach (var monitor in config.Monitors.Where(x => x.Addresses.Contains(websiteAddress)))
+        foreach (var monitor in _config.Monitors.Where(x => x.Addresses.Contains(websiteAddress)))
         {
             // Distinct() as a workaround for duplicate config list values
             var recipients = monitor.Recipients.Distinct().ToArray();
-            var message = CreateMessage(config.Sender, recipients);
-            SetMessageText(message, websiteAddress, websiteIsOnline, monitor.Texts);
+            var message = CreateMessage(_config.Sender, recipients);
+            SetMessageText(message, websiteAddress, isOnline, monitor.Texts);
 
-            Send(message, config);
+            Send(message, _config);
         }
     }
 
