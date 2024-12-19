@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using MeercatMonitor.Storage;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System.Net.Sockets;
 
 namespace MeercatMonitor;
 
-internal class OnlineMonitor(Config config, NotificationService _notify) : BackgroundService
+internal class OnlineMonitor(Config config, NotificationService _notify, ILogger<OnlineMonitor> _log) : BackgroundService
 {
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(config.CheckIntervalS));
     // Distinct() across groups and also work around duplicate config list values
@@ -22,13 +24,13 @@ internal class OnlineMonitor(Config config, NotificationService _notify) : Backg
         }
         else
         {
-            Log.Warning("Unknown protocol on {WebsiteAddress}", websiteAddress);
+            _log.LogWarning("Unknown protocol on {WebsiteAddress}", websiteAddress);
         }
     }
 
     private async Task CheckHttpAsync(string websiteAddress)
     {
-        Log.Debug("Checking {WebsiteAddress}…", websiteAddress);
+        _log.LogDebug("Checking {WebsiteAddress}…", websiteAddress);
 
         try
         {
@@ -43,7 +45,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify) : Backg
         }
         catch (Exception ex)
         {
-            Log.Warning(ex, "HTTP {WebsiteAddress} failed the uptime check with exception {ExceptionMessage}", websiteAddress, ex.Message + ex.InnerException?.Message);
+            _log.LogWarning(ex, "HTTP {WebsiteAddress} failed the uptime check with exception {ExceptionMessage}", websiteAddress, ex.Message + ex.InnerException?.Message);
 
             UpdateStatus(websiteAddress, isOnline: false);
         }
@@ -52,7 +54,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify) : Backg
     private async Task CheckFtpAsync(string websiteAddress)
     {
         var (hostname, port) = ParseFtpAddress(websiteAddress);
-        Log.Debug("Testing FTP (TCP) {Hostname}:{Port}…", hostname, port);
+        _log.LogDebug("Testing FTP (TCP) {Hostname}:{Port}…", hostname, port);
 
         try
         {
@@ -66,13 +68,13 @@ internal class OnlineMonitor(Config config, NotificationService _notify) : Backg
         catch (SocketException ex)
         {
             // Socket error codes see https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
-            Log.Warning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}, socket error code {ErrorCode}", hostname, port, ex.Message, ex.ErrorCode);
+            _log.LogWarning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}, socket error code {ErrorCode}", hostname, port, ex.Message, ex.ErrorCode);
 
             UpdateStatus(websiteAddress, isOnline: false);
         }
         catch (Exception ex)
         {
-            Log.Warning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}", hostname, port, ex.Message);
+            _log.LogWarning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}", hostname, port, ex.Message);
 
             UpdateStatus(websiteAddress, isOnline: false);
         }
@@ -90,7 +92,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify) : Backg
 
     private void UpdateStatus(string websiteAddress, bool isOnline)
     {
-        Log.Debug("{WebsiteAddress} is {Status}", websiteAddress, isOnline ? "online" : "offline");
+        _log.LogDebug("{WebsiteAddress} is {Status}", websiteAddress, isOnline ? "online" : "offline");
 
         // Ignore the first visit - we only have online status *change* events
         if (!_websiteStatus.TryGetValue(websiteAddress, out var wasOnline))
@@ -109,16 +111,16 @@ internal class OnlineMonitor(Config config, NotificationService _notify) : Backg
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Log.Information("Starting monitoring of ({MonitorTargetCount}) [{MonitorTargets}]…", _websiteAddresses.Length, string.Join(",", _websiteAddresses));
+        _log.LogInformation("Starting monitoring of ({MonitorTargetCount}) [{MonitorTargets}]…", _websiteAddresses.Length, string.Join(",", _websiteAddresses));
         do
         {
-            Log.Information("Checking {MonitorTargetCount} targets…", _websiteAddresses.Length);
+            _log.LogInformation("Checking {MonitorTargetCount} targets…", _websiteAddresses.Length);
             foreach (var websiteAddress in _websiteAddresses)
             {
                 await CheckAddressAsync(websiteAddress);
             }
         }
         while (await _timer.WaitForNextTickAsync(stoppingToken) && !stoppingToken.IsCancellationRequested);
-        Log.Debug("Stopped monitoring");
+        _log.LogDebug("Stopped monitoring");
     }
 }
