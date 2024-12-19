@@ -20,6 +20,7 @@ HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<OnlineMonitor>();
 builder.Services.AddSingleton<NotificationService>();
 builder.Services.AddSingleton<EmailSender>();
+builder.Services.AddSingleton<StorageService>();
 builder.Services.AddSerilog(ConfigureLogger);
 builder.Services.AddSingleton(config);
 
@@ -40,7 +41,7 @@ static Config LoadConfigFile()
 
 static void ConfigureLogger(LoggerConfiguration x) => x
     .MinimumLevel.Debug()
-    .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}");
+    .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug, outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}");
 
 static Serilog.Core.Logger CreateLogger()
 {
