@@ -5,7 +5,7 @@ using System.Net.Sockets;
 
 namespace MeercatMonitor;
 
-internal class OnlineMonitor(Config config, NotificationService _notify, ILogger<OnlineMonitor> _log) : BackgroundService
+internal class OnlineMonitor(Config config, NotificationService _notify, StorageService _storageService, ILogger<OnlineMonitor> _log) : BackgroundService
 {
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(config.CheckIntervalS));
     // Distinct() across groups and also work around duplicate config list values
@@ -93,6 +93,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
     private void UpdateStatus(string websiteAddress, bool isOnline)
     {
         _log.LogDebug("{WebsiteAddress} is {Status}", websiteAddress, isOnline ? "online" : "offline");
+        _storageService.SaveStatus(websiteAddress, isOnline);
 
         // Ignore the first visit - we only have online status *change* events
         if (!_websiteStatus.TryGetValue(websiteAddress, out var wasOnline))

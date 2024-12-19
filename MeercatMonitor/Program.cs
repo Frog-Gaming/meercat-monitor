@@ -1,4 +1,5 @@
 ﻿using MeercatMonitor;
+using MeercatMonitor.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,6 +21,7 @@ HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<OnlineMonitor>();
 builder.Services.AddSingleton<NotificationService>();
 builder.Services.AddSingleton<EmailSender>();
+builder.Services.AddSingleton<StorageService>();
 builder.Services.AddSerilog(ConfigureLogger);
 builder.Services.AddSingleton(config);
 
