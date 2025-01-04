@@ -4,6 +4,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
     <PublishSingleFile>True</PublishSingleFile>
     <SelfContained>False</SelfContained>
     <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
