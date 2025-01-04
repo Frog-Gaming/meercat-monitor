@@ -6,5 +6,6 @@
     <Nullable>enable</Nullable>
     <PublishSingleFile>True</PublishSingleFile>
     <SelfContained>False</SelfContained>
+    <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
   </PropertyGroup>
 </Project>
