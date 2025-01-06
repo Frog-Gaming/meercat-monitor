@@ -1,15 +1,12 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 
 namespace MeercatMonitor;
 
-internal class OnlineMonitor(Config config, NotificationService _notify, ILogger<OnlineMonitor> _log) : BackgroundService
+internal class OnlineMonitor(Config config, NotificationService _notify, ILogger<OnlineMonitor> _log, OnlineStatusStore _statusStore) : BackgroundService
 {
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(config.CheckIntervalS));
     // Distinct() across groups and also work around duplicate config list values
     private readonly string[] _websiteAddresses = config.Monitors.SelectMany(x => x.Addresses).Distinct().ToArray();
-    private readonly Dictionary<string, bool> _websiteStatus = [];
 
     private async Task CheckAddressAsync(string websiteAddress)
     {
@@ -94,9 +91,9 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
         _log.LogDebug("{WebsiteAddress} is {Status}", websiteAddress, isOnline ? "online" : "offline");
 
         // Ignore the first visit - we only have online status *change* events
-        if (!_websiteStatus.TryGetValue(websiteAddress, out var wasOnline))
+        if (!_statusStore.TryGetValue(websiteAddress, out var wasOnline))
         {
-            _websiteStatus[websiteAddress] = isOnline;
+            _statusStore[websiteAddress] = isOnline;
             return;
         }
 
@@ -105,7 +102,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
             _notify.HandleStatusChange(websiteAddress, isOnline);
         }
 
-        _websiteStatus[websiteAddress] = isOnline;
+        _statusStore[websiteAddress] = isOnline;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
