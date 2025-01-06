@@ -1,6 +1,13 @@
 ﻿@page
-@model MeercatMonitor.Pages.IndexModel
-@{
-}
 
-<h1>Hallo Jan</h1>
+@using MeercatMonitor;
+@using MeercatMonitor.Pages;
+
+@model IndexModel
+@inject OnlineStatusStore onlineStatusStore;
+
+<h1>Online Status</h1>
+
+@foreach (var status in onlineStatusStore) {
+    <p>@status.Key : @(status.Value ? "✅" : "🛑") </p>
+}
