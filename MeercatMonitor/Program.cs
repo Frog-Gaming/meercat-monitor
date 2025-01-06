@@ -1,7 +1,4 @@
 ﻿using MeercatMonitor;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 var config = LoadConfigFile();
 
@@ -16,15 +13,20 @@ if (args.Length > 0 && args[0].StartsWith(testArg))
     return;
 }
 
-HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHostedService<OnlineMonitor>();
 builder.Services.AddSingleton<NotificationService>();
 builder.Services.AddSingleton<EmailSender>();
 builder.Services.AddSerilog(ConfigureLogger);
 builder.Services.AddSingleton(config);
+builder.Services.AddRazorPages();
 
-IHost host = builder.Build();
+var host = builder.Build();
+host.UseStaticFiles();
+host.UseRouting();
+host.MapRazorPages();
 await host.RunAsync();
+
 
 
 static Config LoadConfigFile()
