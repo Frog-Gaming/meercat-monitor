@@ -6,17 +6,19 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
 {
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(config.CheckIntervalS));
     // Distinct() across groups and also work around duplicate config list values
-    private readonly string[] _websiteAddresses = config.Monitors.SelectMany(x => x.Addresses).Distinct().ToArray();
+    private readonly ToMonitorAddress[] _toMonitorAddresses = config.Monitors.SelectMany(x => x.Addresses).Distinct().ToArray();
 
-    private async Task CheckAddressAsync(string websiteAddress)
+    private async Task CheckAddressAsync(ToMonitorAddress toMonitorAddress)
     {
+        var websiteAddress = toMonitorAddress.Address;
+
         if (websiteAddress.StartsWith("http://") || websiteAddress.StartsWith("https://"))
         {
-            await CheckHttpAsync(websiteAddress);
+            await CheckHttpAsync(toMonitorAddress);
         }
         else if (websiteAddress.StartsWith("ftp://"))
         {
-            await CheckFtpAsync(websiteAddress);
+            await CheckFtpAsync(toMonitorAddress);
         }
         else
         {
@@ -24,32 +26,32 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
         }
     }
 
-    private async Task CheckHttpAsync(string websiteAddress)
+    private async Task CheckHttpAsync(ToMonitorAddress toMonitorAddress)
     {
-        _log.LogDebug("Checking {WebsiteAddress}…", websiteAddress);
+        _log.LogDebug("Checking {WebsiteAddress}…", toMonitorAddress.Address);
 
         try
         {
             using HttpClient c = new();
 
-            HttpRequestMessage req = new(HttpMethod.Head, websiteAddress);
+            HttpRequestMessage req = new(HttpMethod.Head, toMonitorAddress.Address);
             HttpResponseMessage res = await c.SendAsync(req);
 
             var isOnline = res.IsSuccessStatusCode;
 
-            UpdateStatus(websiteAddress, isOnline);
+            UpdateStatus(toMonitorAddress, isOnline);
         }
         catch (Exception ex)
         {
-            _log.LogWarning(ex, "HTTP {WebsiteAddress} failed the uptime check with exception {ExceptionMessage}", websiteAddress, ex.Message + ex.InnerException?.Message);
+            _log.LogWarning(ex, "HTTP {WebsiteAddress} failed the uptime check with exception {ExceptionMessage}", toMonitorAddress.Address, ex.Message + ex.InnerException?.Message);
 
-            UpdateStatus(websiteAddress, isOnline: false);
+            UpdateStatus(toMonitorAddress, isOnline: false);
         }
     }
 
-    private async Task CheckFtpAsync(string websiteAddress)
+    private async Task CheckFtpAsync(ToMonitorAddress toMonitorAddress)
     {
-        var (hostname, port) = ParseFtpAddress(websiteAddress);
+        var (hostname, port) = ParseFtpAddress(toMonitorAddress.Address);
         _log.LogDebug("Testing FTP (TCP) {Hostname}:{Port}…", hostname, port);
 
         try
@@ -59,20 +61,20 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
             using var stream = tcp.GetStream();
             stream.Close();
 
-            UpdateStatus(websiteAddress, isOnline: true);
+            UpdateStatus(toMonitorAddress, isOnline: true);
         }
         catch (SocketException ex)
         {
             // Socket error codes see https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
             _log.LogWarning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}, socket error code {ErrorCode}", hostname, port, ex.Message, ex.ErrorCode);
 
-            UpdateStatus(websiteAddress, isOnline: false);
+            UpdateStatus(toMonitorAddress, isOnline: false);
         }
         catch (Exception ex)
         {
             _log.LogWarning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}", hostname, port, ex.Message);
 
-            UpdateStatus(websiteAddress, isOnline: false);
+            UpdateStatus(toMonitorAddress, isOnline: false);
         }
 
         static (string hostname, int port) ParseFtpAddress(string websiteAddress)
@@ -86,8 +88,10 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
         }
     }
 
-    private void UpdateStatus(string websiteAddress, bool isOnline)
+    private void UpdateStatus(ToMonitorAddress toMonitorAddress, bool isOnline)
     {
+        var websiteAddress = toMonitorAddress.Address;
+
         _log.LogDebug("{WebsiteAddress} is {Status}", websiteAddress, isOnline ? "online" : "offline");
 
         // Ignore the first visit - we only have online status *change* events
@@ -99,7 +103,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
 
         if (wasOnline != isOnline)
         {
-            _notify.HandleStatusChange(websiteAddress, isOnline);
+            _notify.HandleStatusChange(toMonitorAddress, isOnline);
         }
 
         _statusStore[websiteAddress] = isOnline;
@@ -107,11 +111,11 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _log.LogInformation("Starting monitoring of ({MonitorTargetCount}) [{MonitorTargets}]…", _websiteAddresses.Length, string.Join(",", _websiteAddresses));
+        _log.LogInformation("Starting monitoring of ({MonitorTargetCount}) [{MonitorTargets}]…", _toMonitorAddresses.Length, string.Join(", ", _toMonitorAddresses.Select(x => $"{x.Name} ({x.Address})")));
         do
         {
-            _log.LogInformation("Checking {MonitorTargetCount} targets…", _websiteAddresses.Length);
-            foreach (var websiteAddress in _websiteAddresses)
+            _log.LogInformation("Checking {MonitorTargetCount} targets…", _toMonitorAddresses.Length);
+            foreach (var websiteAddress in _toMonitorAddresses)
             {
                 await CheckAddressAsync(websiteAddress);
             }

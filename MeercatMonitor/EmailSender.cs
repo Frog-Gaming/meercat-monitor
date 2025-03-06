@@ -6,14 +6,14 @@ namespace MeercatMonitor;
 
 internal class EmailSender(Config _config)
 {
-    public void SendFor(string websiteAddress, bool isOnline)
+    public void SendFor(ToMonitorAddress toMonitorAddress, bool isOnline)
     {
-        foreach (var monitor in _config.Monitors.Where(x => x.Addresses.Contains(websiteAddress)))
+        foreach (var monitorGroup in _config.Monitors.Where(x => x.Addresses.Contains(toMonitorAddress)))
         {
             // Distinct() as a workaround for duplicate config list values
-            var recipients = monitor.Recipients.Distinct().ToArray();
+            var recipients = monitorGroup.Recipients.Distinct().ToArray();
             var message = CreateMessage(_config.Sender, recipients);
-            SetMessageText(message, websiteAddress, isOnline, monitor.Texts);
+            SetMessageText(message, toMonitorAddress, isOnline, monitorGroup.Texts);
 
             Send(message, _config);
         }
@@ -31,29 +31,37 @@ internal class EmailSender(Config _config)
 
     private static MailboxAddress ConvertAddress(MailAddress addr) => new(addr.Name, addr.Address);
 
-    private static void SetMessageText(MimeMessage message, string websiteAddress, bool websiteIsOnline, Texts texts)
+    private static void SetMessageText(MimeMessage message, ToMonitorAddress toMonitorAddress, bool websiteIsOnline, Texts texts)
     {
-        message.Subject = (websiteIsOnline ? texts.SubjWentOnline : texts.SubjWentOffline).Replace("{websiteAddress}", websiteAddress);
+        var subjectTemplate = websiteIsOnline ? texts.SubjWentOnline : texts.SubjWentOffline;
+        message.Subject = FillTemplate(subjectTemplate, toMonitorAddress, html: false);
 
         var builder = new BodyBuilder();
         if (websiteIsOnline && texts.BodyPlainWentOnline is not null)
         {
-            builder.TextBody = texts.BodyPlainWentOnline.Replace("{websiteAddress}", websiteAddress);
+            builder.TextBody = FillTemplate(texts.BodyPlainWentOnline, toMonitorAddress, html: false);
         }
         if (!websiteIsOnline && texts.BodyPlainWentOffline is not null)
         {
-            builder.TextBody = texts.BodyPlainWentOffline.Replace("{websiteAddress}", websiteAddress);
+            builder.TextBody = FillTemplate(texts.BodyPlainWentOffline, toMonitorAddress, html: false);
         }
-        var websiteAddressHtmlEscaped = WebUtility.HtmlEncode(websiteAddress);
         if (websiteIsOnline && texts.BodyHtmlWentOnline is not null)
         {
-            builder.HtmlBody = texts.BodyHtmlWentOnline.Replace("{websiteAddress}", websiteAddressHtmlEscaped);
+            builder.HtmlBody = FillTemplate(texts.BodyHtmlWentOnline, toMonitorAddress, html: true);
         }
         if (!websiteIsOnline && texts.BodyHtmlWentOffline is not null)
         {
-            builder.HtmlBody = texts.BodyHtmlWentOffline.Replace("{websiteAddress}", websiteAddressHtmlEscaped);
+            builder.HtmlBody = FillTemplate(texts.BodyHtmlWentOffline, toMonitorAddress, html: true);
         }
         message.Body = builder.ToMessageBody();
+
+        static string FillTemplate(string template, ToMonitorAddress toMonitorAddress, bool html)
+        {
+            var websiteName = toMonitorAddress.Name;
+            var websiteAddress = html ? WebUtility.HtmlEncode(toMonitorAddress.Address) : toMonitorAddress.Address;
+
+            return template.Replace("{websiteName}", websiteName).Replace("{websiteAddress}", websiteAddress);
+        }
     }
 
     private static void Send(MimeMessage message, Config config)
@@ -79,14 +87,14 @@ internal class EmailSender(Config _config)
     {
         var message = CreateMessage(ConvertAddress(config.Sender), [new MailboxAddress(recipientAddress, recipientAddress)]);
         var texts = new Texts(
-            SubjWentOnline: "GAWWK GAWWK your website {websiteAddress} is up again",
-            SubjWentOffline: "GAWWK GAWWK your website {websiteAddress} is down",
+            SubjWentOnline: "GAWWK GAWWK your website {websiteName} is up again",
+            SubjWentOffline: "GAWWK GAWWK your website {websiteName} is down",
             BodyPlainWentOnline: "🐿️🥜 Your website {websiteAddress} is up again. lol 👌",
             BodyPlainWentOffline: "🐿️🥜 Your website {websiteAddress} is down. lol 👌",
             BodyHtmlWentOnline: "<p>🐿️🥜 Your website {websiteAddress} is <strong>up</strong> again. lol 👌</p>",
             BodyHtmlWentOffline: "<p>🐿️🥜 Your website {websiteAddress} is <strong>down</strong>. lol 👌</p>"
         );
-        SetMessageText(message, "<fake-website-for-testing>", websiteIsOnline: true, texts);
+        SetMessageText(message, new ToMonitorAddress("<fake website name>", "<fake-website-for-testing>"), websiteIsOnline: true, texts);
 
         Send(message, config);
     }
