@@ -25,18 +25,21 @@
 <body>
     <h1>Online Status</h1>
 
-    @foreach (GroupResultsModel x in @Model.GroupResults)
+    @if (Model.GroupResults.Length == 0)
     {
-        <h2>@x.Group.Name</h2>
-        <div class="status-grid">
-            @foreach (Result? result in x.Results)
-            {
-                if (result is null) continue;
-                <span class="target" title="@result.Target.Address">@result.Target.Name</span>
-                <div class="status">@Formatter.Format(result.Status)</div>
-                <div class="time" title="state from"><time datetime="@result.Time.ToString("u")">@result.Time.ToString("u")</time></div>
-            }
-        </div>
+        <p><i>No monitors configured - no status known</i></p>
+    }
+    else if (Model.GroupResults.Length == 1)
+    {
+        @await Html.PartialAsync("StatusTable", Model.GroupResults.Single())
+    }
+    else
+    {
+        @foreach (GroupResultsModel x in @Model.GroupResults)
+        {
+            <h2>@x.Group.Name</h2>
+            @await Html.PartialAsync("StatusTable", x)
+        }
     }
 </body>
 </html>
