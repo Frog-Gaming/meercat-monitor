@@ -27,13 +27,22 @@
 
         .status-grid {
             display: grid;
-            grid-template-columns: auto auto auto;
+            grid-template: auto auto auto;
             gap: 1em;
             justify-content: start;
         }
 
+        .status {
+        }
+
         .time {
             font-style: italic;
+        }
+
+        .history {
+            grid-column: 1 / 4;
+
+            display: flex;
         }
     </style>
 </head>

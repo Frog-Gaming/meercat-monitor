@@ -94,14 +94,15 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
 
         var newStatus = isOnline ? OnlineStatusStore.Status.Online : OnlineStatusStore.Status.Offline;
 
+        var prevStates = _statusStore.GetValues(toMonitorAddress);
         // Ignore the first visit - we only have online status *change* events
-        if (!_statusStore.TryGetValue(toMonitorAddress, out var prevState))
+        if (!prevStates.Any())
         {
             _statusStore.SetNow(toMonitorAddress, newStatus);
             return;
         }
 
-        var prevStatus = prevState?.Status;
+        var prevStatus = prevStates.Last().Status;
         if (prevStatus != newStatus)
         {
             _notify.HandleStatusChange(toMonitorAddress, isOnline: newStatus == OnlineStatusStore.Status.Online);

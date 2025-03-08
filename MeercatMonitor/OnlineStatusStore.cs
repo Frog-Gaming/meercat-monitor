@@ -4,16 +4,26 @@ public class OnlineStatusStore
 {
     public enum Status { Unknown, Online, Offline, }
 
-    public record Result(ToMonitorAddress Target, Status Status, DateTimeOffset Time)
+    public record Result(Status Status, DateTimeOffset Time);
+
+    private const int HistoryLimit = 24 * 60;
+
+    private readonly Dictionary<ToMonitorAddress, List<Result>> _store = [];
+
+    public IEnumerable<Result> GetValues(ToMonitorAddress key) => _store.TryGetValue(key, out var results) ? [.. results] : [];
+
+    public void SetNow(ToMonitorAddress key, Status status) => Push(key, new Result(status, DateTimeOffset.Now));
+
+    private void Push(ToMonitorAddress key, Result result)
     {
-        public static Result Now(ToMonitorAddress target, Status status) => new(target, status, DateTimeOffset.Now);
+        if (!_store.TryGetValue(key, out var list))
+        {
+            list = [];
+            _store[key] = list;
+        }
+
+        if (list.Count >= HistoryLimit) list.RemoveAt(0);
+
+        list.Add(result);
     }
-
-    private readonly Dictionary<ToMonitorAddress, Result> _store = [];
-
-    public bool TryGetValue(ToMonitorAddress key, out Result? value) => _store.TryGetValue(key, out value);
-
-    public void SetNow(ToMonitorAddress key, Status status) => _store[key] = Result.Now(key, status);
-
-    public IReadOnlyCollection<Result> GetAll() => _store.Values;
 }
