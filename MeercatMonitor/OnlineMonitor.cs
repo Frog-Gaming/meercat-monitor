@@ -90,23 +90,24 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
 
     private void UpdateStatus(ToMonitorAddress toMonitorAddress, bool isOnline)
     {
-        var websiteAddress = toMonitorAddress.Address;
+        _log.LogDebug("{WebsiteAddress} is {Status}", toMonitorAddress.Address, isOnline ? "online" : "offline");
 
-        _log.LogDebug("{WebsiteAddress} is {Status}", websiteAddress, isOnline ? "online" : "offline");
+        var newStatus = isOnline ? OnlineStatusStore.Status.Online : OnlineStatusStore.Status.Offline;
 
         // Ignore the first visit - we only have online status *change* events
-        if (!_statusStore.TryGetValue(websiteAddress, out var wasOnline))
+        if (!_statusStore.TryGetValue(toMonitorAddress, out var prevState))
         {
-            _statusStore[websiteAddress] = isOnline;
+            _statusStore.SetNow(toMonitorAddress, newStatus);
             return;
         }
 
-        if (wasOnline != isOnline)
+        var prevStatus = prevState?.Status;
+        if (prevStatus != newStatus)
         {
-            _notify.HandleStatusChange(toMonitorAddress, isOnline);
+            _notify.HandleStatusChange(toMonitorAddress, isOnline: newStatus == OnlineStatusStore.Status.Online);
         }
 
-        _statusStore[websiteAddress] = isOnline;
+        _statusStore.SetNow(toMonitorAddress, newStatus);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

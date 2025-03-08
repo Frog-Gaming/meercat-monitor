@@ -2,12 +2,38 @@
 
 @using MeercatMonitor;
 @using MeercatMonitor.Pages;
+@using static MeercatMonitor.OnlineStatusStore
 
 @model IndexModel
 @inject OnlineStatusStore onlineStatusStore;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Online Status - Meercat Monitor</title>
+    <style>
+        .status-grid {
+            display: grid;
+            grid-template-columns: auto auto auto;
+            gap: 1em;
+            justify-content: start;
+        }
 
-<h1>Online Status</h1>
+        .time {
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Online Status</h1>
 
-@foreach (var status in onlineStatusStore) {
-    <p>@status.Key : @(status.Value ? "✅" : "🛑") </p>
-}
+    <div class="status-grid">
+        @foreach (Result result in onlineStatusStore.GetAll())
+        {
+            <span class="target" title="@result.Target.Address">@result.Target.Name</span>
+            <div class="status">@Formatter.Format(result.Status)</div>
+            <div class="time" title="state from"><time datetime="@result.Time.ToString("u")">@result.Time.ToString("u")</time></div>
+        }
+    </div>
+</body>
+</html>
