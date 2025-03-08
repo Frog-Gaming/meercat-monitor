@@ -1,7 +1,7 @@
-﻿@page "/"
+﻿@page "/{slug}/"
 @namespace MeercatMonitor.Pages
 @using static MeercatMonitor.OnlineStatusStore
-@model IndexPageModel
+@model GroupPageModel
 
 <!DOCTYPE html>
 <html lang="en">
@@ -39,23 +39,15 @@
     </style>
 </head>
 <body>
-    <h1>Online Status</h1>
-
-    @if (Model.GroupResults.Length == 0)
+    @if (Model.GroupResults is null)
     {
-        <p><i>No monitors configured - no status known</i></p>
-    }
-    else if (Model.GroupResults.Length == 1)
-    {
-        @await Html.PartialAsync("StatusTable", Model.GroupResults.Single())
+        <h1>Online Status</h1>
+        <p>Not found</p>
     }
     else
     {
-        @foreach (var x in @Model.GroupResults)
-        {
-            <h2>@x.Group.Name</h2>
-            @await Html.PartialAsync("StatusTable", x)
-        }
+        <h1>@Model.GroupResults.Group.Name Online Status</h1>
+        @await Html.PartialAsync("StatusTable", Model.GroupResults)
     }
 </body>
 </html>

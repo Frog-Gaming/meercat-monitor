@@ -2,7 +2,7 @@
 
 public record Config(int CheckIntervalS, MonitorGroup[] Monitors, MailAddress Sender, MailServer MailServer);
 
-public record MonitorGroup(string Name, ToMonitorAddress[] Addresses, MailAddress[] Recipients, Texts Texts);
+public record MonitorGroup(string Name, string Slug, ToMonitorAddress[] Addresses, MailAddress[] Recipients, Texts Texts);
 
 public record ToMonitorAddress(string Name, string Address);
 
