@@ -1,11 +1,8 @@
 ﻿@page
-
-@using MeercatMonitor;
 @using MeercatMonitor.Pages;
 @using static MeercatMonitor.OnlineStatusStore
+@model IndexPageModel
 
-@model IndexModel
-@inject OnlineStatusStore onlineStatusStore;
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,7 +25,7 @@
     <h1>Online Status</h1>
 
     <div class="status-grid">
-        @foreach (Result result in onlineStatusStore.GetAll())
+        @foreach (Result result in Model.AllStatus)
         {
             <span class="target" title="@result.Target.Address">@result.Target.Name</span>
             <div class="status">@Formatter.Format(result.Status)</div>
