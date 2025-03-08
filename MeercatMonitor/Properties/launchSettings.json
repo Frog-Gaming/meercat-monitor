@@ -1,7 +1,8 @@
 {
   "profiles": {
     "MeercatMonitor": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "launchBrowser": true
     },
     "Send Test Email": {
       "commandName": "Project",
