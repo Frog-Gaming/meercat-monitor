@@ -1,53 +1,18 @@
 ﻿@page "/{slug}/"
+@{
+    Layout = "_Layout";
+}
 @namespace MeercatMonitor.Pages
 @using static MeercatMonitor.OnlineStatusStore
 @model GroupPageModel
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Online Status - Meercat Monitor</title>
-    <style>
-        :root {
-            color-scheme: light dark;
-        }
-        html {
-            background: light-dark(#eee, #111);
-            color: light-dark(#111, #ccc);
-        }
-        a:link {
-            color: light-dark(#118, #88f);
-        }
-        a:focus {
-            color: light-dark(#55f, #55f);
-        }
-        a:visited {
-            color: light-dark(#33f, #77f);
-        }
-
-        .status-grid {
-            display: grid;
-            grid-template-columns: auto auto auto;
-            gap: 1em;
-            justify-content: start;
-        }
-
-        .time {
-            font-style: italic;
-        }
-    </style>
-</head>
-<body>
-    @if (Model.GroupResults is null)
-    {
-        <h1>Online Status</h1>
-        <p>Not found</p>
-    }
-    else
-    {
-        <h1>@Model.GroupResults.Group.Name Online Status</h1>
-        @await Html.PartialAsync("StatusTable", Model.GroupResults)
-    }
-</body>
-</html>
+@if (Model.GroupResults is null)
+{
+    <h1>Online Status</h1>
+    <p>Not found</p>
+}
+else
+{
+    <h1>@Model.GroupResults.Group.Name Online Status</h1>
+    @await Html.PartialAsync("StatusTable", Model.GroupResults)
+}

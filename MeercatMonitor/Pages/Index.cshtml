@@ -1,61 +1,26 @@
 ﻿@page "/"
+@{
+    Layout = "_Layout";
+}
 @namespace MeercatMonitor.Pages
 @using static MeercatMonitor.OnlineStatusStore
 @model IndexPageModel
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Online Status - Meercat Monitor</title>
-    <style>
-        :root {
-            color-scheme: light dark;
-        }
-        html {
-            background: light-dark(#eee, #111);
-            color: light-dark(#111, #ccc);
-        }
-        a:link {
-            color: light-dark(#118, #88f);
-        }
-        a:focus {
-            color: light-dark(#55f, #55f);
-        }
-        a:visited {
-            color: light-dark(#33f, #77f);
-        }
+<h1>Online Status</h1>
 
-        .status-grid {
-            display: grid;
-            grid-template-columns: auto auto auto;
-            gap: 1em;
-            justify-content: start;
-        }
-
-        .time {
-            font-style: italic;
-        }
-    </style>
-</head>
-<body>
-    <h1>Online Status</h1>
-
-    @if (Model.GroupResults.Length == 0)
+@if (Model.GroupResults.Length == 0)
+{
+    <p><i>No monitors configured - no status known</i></p>
+}
+else if (Model.GroupResults.Length == 1)
+{
+    @await Html.PartialAsync("StatusTable", Model.GroupResults.Single())
+}
+else
+{
+    @foreach (var x in @Model.GroupResults)
     {
-        <p><i>No monitors configured - no status known</i></p>
+        <h2>@x.Group.Name</h2>
+        @await Html.PartialAsync("StatusTable", x)
     }
-    else if (Model.GroupResults.Length == 1)
-    {
-        @await Html.PartialAsync("StatusTable", Model.GroupResults.Single())
-    }
-    else
-    {
-        @foreach (var x in @Model.GroupResults)
-        {
-            <h2>@x.Group.Name</h2>
-            @await Html.PartialAsync("StatusTable", x)
-        }
-    }
-</body>
-</html>
+}
