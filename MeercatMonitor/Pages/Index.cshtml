@@ -1,5 +1,6 @@
 ﻿@page
-@using MeercatMonitor.Pages;
+@namespace MeercatMonitor.Pages
+@using static MeercatMonitor.Pages.IndexPageModel
 @using static MeercatMonitor.OnlineStatusStore
 @model IndexPageModel
 
@@ -24,13 +25,18 @@
 <body>
     <h1>Online Status</h1>
 
-    <div class="status-grid">
-        @foreach (Result result in Model.AllStatus)
-        {
-            <span class="target" title="@result.Target.Address">@result.Target.Name</span>
-            <div class="status">@Formatter.Format(result.Status)</div>
-            <div class="time" title="state from"><time datetime="@result.Time.ToString("u")">@result.Time.ToString("u")</time></div>
-        }
-    </div>
+    @foreach (GroupResultsModel x in @Model.GroupResults)
+    {
+        <h2>@x.Group.Name</h2>
+        <div class="status-grid">
+            @foreach (Result? result in x.Results)
+            {
+                if (result is null) continue;
+                <span class="target" title="@result.Target.Address">@result.Target.Name</span>
+                <div class="status">@Formatter.Format(result.Status)</div>
+                <div class="time" title="state from"><time datetime="@result.Time.ToString("u")">@result.Time.ToString("u")</time></div>
+            }
+        </div>
+    }
 </body>
 </html>
