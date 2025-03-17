@@ -5,8 +5,11 @@
 @namespace MeercatMonitor.Pages
 @using static MeercatMonitor.OnlineStatusStore
 @model IndexPageModel
+@{
+    ViewData["Title"] = "Online Status";
+}
 
-<h1>Online Status</h1>
+<h1>@ViewData["Title"]</h1>
 
 @if (Model.GroupResults.Length == 0)
 {

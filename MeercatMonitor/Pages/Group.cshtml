@@ -5,14 +5,16 @@
 @namespace MeercatMonitor.Pages
 @using static MeercatMonitor.OnlineStatusStore
 @model GroupPageModel
+@{
+    ViewData["Title"] = Model.GroupResults is null ? "Online Status" : $"{Model.GroupResults.Group.Name} Online Status";
+}
 
+<h1>@ViewData["Title"]</h1>
 @if (Model.GroupResults is null)
 {
-    <h1>Online Status</h1>
     <p>Not found</p>
 }
 else
 {
-    <h1>@Model.GroupResults.Group.Name Online Status</h1>
     @await Html.PartialAsync("StatusTable", Model.GroupResults)
 }
