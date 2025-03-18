@@ -1,17 +1,11 @@
 using MeercatMonitor;
 
+using var log = CreateBootstrapLogger();
+
 var config = LoadConfigFile();
 
-var testArg = "--testemail=";
-if (args.Length > 0 && args[0].StartsWith(testArg))
-{
-    using var logger = CreateLogger();
-    var recipient = args[0][testArg.Length..];
-    logger.Information("Sending test email to {Recipient}…", recipient);
-    EmailSender.SendTestEmail(config, recipient);
-    logger.Information("Sent test email to {Recipient}.", recipient);
-    return;
-}
+var testResult = TestCommandHandler.HandleTestCommands(log, config);
+if (testResult is TestCommandHandler.Result.Complete) return 0;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHostedService<OnlineMonitor>();
@@ -34,6 +28,8 @@ host.MapRazorPages();
 //host.UseDeveloperExceptionPage();
 await host.RunAsync();
 
+return 0;
+
 static Config LoadConfigFile()
 {
     var configFile = File.Exists("appsettings.development.json") ? "appsettings.development.json" : "appsettings.json";
@@ -45,13 +41,13 @@ static Config LoadConfigFile()
         .Get<Config>() ?? throw new InvalidOperationException();
 }
 
+static Serilog.Extensions.Hosting.ReloadableLogger CreateBootstrapLogger()
+{
+    var logConf = new LoggerConfiguration();
+    ConfigureLogger(logConf);
+    return logConf.CreateBootstrapLogger();
+}
+
 static void ConfigureLogger(LoggerConfiguration x) => x
     .MinimumLevel.Debug()
     .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}");
-
-static Serilog.Core.Logger CreateLogger()
-{
-    var loggerConfiguration = new LoggerConfiguration();
-    ConfigureLogger(loggerConfiguration);
-    return loggerConfiguration.CreateLogger();
-}
