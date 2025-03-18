@@ -1,3 +1,3 @@
 namespace MeercatMonitor;
 
-public record Result(Status Status, DateTimeOffset Time);
+public record Result(Status Status, DateTimeOffset Time, TimeSpan ResponseTime);

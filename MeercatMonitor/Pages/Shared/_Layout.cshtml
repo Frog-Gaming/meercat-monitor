@@ -22,8 +22,14 @@
             grid-area: name;
         }
 
-        .status {
+        .status-grid > .status {
             grid-area: status;
+        }
+        .status.online {
+          background: green;
+        }
+        .status.offline {
+          background:red;
         }
 
         .time {
@@ -36,6 +42,12 @@
 
             display: flex;
             flex-wrap: wrap;
+            gap: 0.5em 2px;
+            align-items: end;
+        }
+        .history .status {
+            min-width: 1em;
+            min-height: 4px;
         }
     </style>
 </head>

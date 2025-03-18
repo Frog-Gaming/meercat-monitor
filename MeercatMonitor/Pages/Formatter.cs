@@ -17,5 +17,13 @@ namespace MeercatMonitor.Pages
             Status.Offline => "🛑",
             _ => throw new NotImplementedException(),
         };
+
+        public static string GetOnlineClass(Status status) => status switch
+        {
+            Status.Unknown => "unknown",
+            Status.Online => "online",
+            Status.Offline => "offline",
+            _ => throw new NotImplementedException(),
+        };
     }
 }

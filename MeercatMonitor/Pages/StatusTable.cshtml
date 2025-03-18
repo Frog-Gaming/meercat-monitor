@@ -16,7 +16,12 @@
         <div class="history">
             @foreach (var result in targetResults.Results)
             {
-                <div class="status" title="@result.Time.ToString("u")">@Formatter.FormatIcon(result.Status)</div>
+                var tooltip = $"{result.Time.ToString("u")} {result.ResponseTime.TotalMilliseconds:N0} ms";
+                var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds / 50):D}";
+                <div class="status @Formatter.GetOnlineClass(result.Status)"
+                     title="@tooltip"
+                     style="height: @(heightPx)px">
+                </div>
             }
         </div>
     }

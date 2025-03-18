@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Sockets;
 
 namespace MeercatMonitor;
@@ -30,6 +31,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
     {
         _log.LogDebug("Checking {WebsiteAddress}…", toMonitorAddress.Address);
 
+        var sw = Stopwatch.StartNew();
         try
         {
             using HttpClient c = new();
@@ -39,13 +41,13 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
 
             var isOnline = res.IsSuccessStatusCode;
 
-            UpdateStatus(toMonitorAddress, isOnline);
+            UpdateStatus(toMonitorAddress, isOnline, sw.Elapsed);
         }
         catch (Exception ex)
         {
             _log.LogWarning(ex, "HTTP {WebsiteAddress} failed the uptime check with exception {ExceptionMessage}", toMonitorAddress.Address, ex.Message + ex.InnerException?.Message);
 
-            UpdateStatus(toMonitorAddress, isOnline: false);
+            UpdateStatus(toMonitorAddress, isOnline: false, sw.Elapsed);
         }
     }
 
@@ -54,6 +56,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
         var (hostname, port) = ParseFtpAddress(toMonitorAddress.Address);
         _log.LogDebug("Testing FTP (TCP) {Hostname}:{Port}…", hostname, port);
 
+        var sw = Stopwatch.StartNew();
         try
         {
             using TcpClient tcp = new();
@@ -61,20 +64,20 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
             using var stream = tcp.GetStream();
             stream.Close();
 
-            UpdateStatus(toMonitorAddress, isOnline: true);
+            UpdateStatus(toMonitorAddress, isOnline: true, sw.Elapsed);
         }
         catch (SocketException ex)
         {
             // Socket error codes see https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
             _log.LogWarning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}, socket error code {ErrorCode}", hostname, port, ex.Message, ex.ErrorCode);
 
-            UpdateStatus(toMonitorAddress, isOnline: false);
+            UpdateStatus(toMonitorAddress, isOnline: false, sw.Elapsed);
         }
         catch (Exception ex)
         {
             _log.LogWarning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}", hostname, port, ex.Message);
 
-            UpdateStatus(toMonitorAddress, isOnline: false);
+            UpdateStatus(toMonitorAddress, isOnline: false, sw.Elapsed);
         }
 
         static (string hostname, int port) ParseFtpAddress(string websiteAddress)
@@ -88,7 +91,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
         }
     }
 
-    private void UpdateStatus(ToMonitorAddress toMonitorAddress, bool isOnline)
+    private void UpdateStatus(ToMonitorAddress toMonitorAddress, bool isOnline, TimeSpan responseTime)
     {
         _log.LogDebug("{WebsiteAddress} is {Status}", toMonitorAddress.Address, isOnline ? "online" : "offline");
 
@@ -98,7 +101,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
         // Ignore the first visit - we only have online status *change* events
         if (!prevStates.Any())
         {
-            _statusStore.SetNow(toMonitorAddress, newStatus);
+            _statusStore.SetNow(toMonitorAddress, newStatus, responseTime);
             return;
         }
 
@@ -108,7 +111,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
             _notify.HandleStatusChange(toMonitorAddress, isOnline: newStatus == Status.Online);
         }
 
-        _statusStore.SetNow(toMonitorAddress, newStatus);
+        _statusStore.SetNow(toMonitorAddress, newStatus, responseTime);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
