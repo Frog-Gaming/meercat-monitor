@@ -4,7 +4,7 @@ using MimeKit;
 
 namespace MeercatMonitor;
 
-internal class EmailSender(Config _config)
+internal class EmailSender(Config _config, TestConfig? _testConfig)
 {
     public void SendFor(ToMonitorAddress toMonitorAddress, bool isOnline)
     {
@@ -14,6 +14,8 @@ internal class EmailSender(Config _config)
             var recipients = monitorGroup.Recipients.Distinct().ToArray();
             var message = CreateMessage(_config.Sender, recipients);
             SetMessageText(message, toMonitorAddress, isOnline, monitorGroup.Texts);
+
+            if (!(_testConfig?.SendEmails ?? true)) return;
 
             Send(message, _config);
         }

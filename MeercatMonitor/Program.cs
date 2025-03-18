@@ -22,6 +22,11 @@ builder.Services.AddSerilog(ConfigureLogger);
 builder.Services.AddSingleton(config);
 builder.Services.AddRazorPages();
 
+if (args.Contains("--test"))
+{
+    builder.Services.AddSingleton(new TestConfig(SendMonitorRequests: false, SendEmails: true, FillTestData: 100));
+}
+
 var host = builder.Build();
 host.UseStaticFiles();
 host.UseRouting();

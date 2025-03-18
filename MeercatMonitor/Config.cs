@@ -10,3 +10,5 @@ public record MailAddress(string Name, string Address);
 public record MailServer(string Address, int Port, bool IgnoreCertValidation = true);
 
 public record Texts(string SubjWentOnline, string SubjWentOffline, string? BodyPlainWentOnline = null, string? BodyPlainWentOffline = null, string? BodyHtmlWentOnline = null, string? BodyHtmlWentOffline = null);
+
+public record TestConfig(bool SendMonitorRequests, bool SendEmails, int? FillTestData);

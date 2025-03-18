@@ -2,7 +2,7 @@ using System.Net.Sockets;
 
 namespace MeercatMonitor;
 
-internal class OnlineMonitor(Config config, NotificationService _notify, ILogger<OnlineMonitor> _log, OnlineStatusStore _statusStore) : BackgroundService
+internal class OnlineMonitor(Config config, NotificationService _notify, ILogger<OnlineMonitor> _log, OnlineStatusStore _statusStore, TestConfig? _testConfig) : BackgroundService
 {
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(config.CheckIntervalS));
     // Distinct() across groups and also work around duplicate config list values
@@ -116,6 +116,8 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
         _log.LogInformation("Starting monitoring of ({MonitorTargetCount}) [{MonitorTargets}]…", _toMonitorAddresses.Length, string.Join(", ", _toMonitorAddresses.Select(x => $"{x.Name} ({x.Address})")));
         do
         {
+            if (!(_testConfig?.SendMonitorRequests ?? true)) continue;
+
             _log.LogInformation("Checking {MonitorTargetCount} targets…", _toMonitorAddresses.Length);
             foreach (var websiteAddress in _toMonitorAddresses)
             {
