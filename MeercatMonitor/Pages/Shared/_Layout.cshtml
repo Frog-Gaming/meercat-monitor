@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
     <title>@(ViewData["Title"] ?? "Online Status") - Meercat Monitor</title>
     <link rel="icon" href="~/favicon-64.avif" />
     <style>
@@ -28,20 +29,30 @@
 
         .status-grid {
             display: grid;
-            grid-template: auto auto auto;
+            grid-template: "name status time ." "history history history history";
             gap: 1em;
             justify-content: start;
         }
 
+        .status-grid > * {
+            justify-self: start;
+        }
+
+        .status-grid > .target {
+            grid-area: name;
+        }
+
         .status {
+            grid-area: status;
         }
 
         .time {
+            grid-area: time;
             font-style: italic;
         }
 
         .history {
-            grid-column: 1 / 4;
+            grid-area: history;
 
             display: flex;
             flex-wrap: wrap;
