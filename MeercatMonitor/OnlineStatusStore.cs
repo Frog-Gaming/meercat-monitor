@@ -4,7 +4,7 @@ public class OnlineStatusStore(TestConfig? _testConfig)
 {
     public enum Status { Unknown, Online, Offline, }
 
-    public record Result(Status Status, DateTimeOffset Time);
+    public record Result(Status Status, DateTimeOffset Time, TimeSpan ResponseTime);
 
     private const int HistoryLimit = 24 * 60;
 
@@ -17,14 +17,14 @@ public class OnlineStatusStore(TestConfig? _testConfig)
             for (var i = _testConfig.FillTestData.Value; i > 0; i--)
             {
                 var dto = DateTimeOffset.Now.AddMinutes(-10 * i);
-                Push(key, new(Status.Online, dto));
+                Push(key, new(Status.Online, dto, TimeSpan.FromMilliseconds(200)));
             }
         }
 
         return _store.TryGetValue(key, out var results) ? [.. results] : [];
     }
 
-    public void SetNow(ToMonitorAddress key, Status status) => Push(key, new Result(status, DateTimeOffset.Now));
+    public void SetNow(ToMonitorAddress key, Status status, TimeSpan responseTime) => Push(key, new Result(status, DateTimeOffset.Now, responseTime));
 
     private void Push(ToMonitorAddress key, Result result)
     {
