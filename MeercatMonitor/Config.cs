@@ -1,4 +1,4 @@
-﻿namespace MeercatMonitor;
+namespace MeercatMonitor;
 
 public record Config(int CheckIntervalS, MonitorGroup[] Monitors, MailAddress Sender, MailServer MailServer);
 

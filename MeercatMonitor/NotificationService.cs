@@ -1,4 +1,4 @@
-﻿namespace MeercatMonitor
+namespace MeercatMonitor
 {
     internal class NotificationService(EmailSender _email)
     {

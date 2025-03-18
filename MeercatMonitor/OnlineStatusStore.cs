@@ -1,4 +1,4 @@
-﻿namespace MeercatMonitor;
+namespace MeercatMonitor;
 
 public class OnlineStatusStore
 {

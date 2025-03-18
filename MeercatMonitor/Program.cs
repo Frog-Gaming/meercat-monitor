@@ -1,4 +1,4 @@
-﻿using MeercatMonitor;
+using MeercatMonitor;
 
 var config = LoadConfigFile();
 

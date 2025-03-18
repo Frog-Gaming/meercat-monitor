@@ -1,4 +1,4 @@
-﻿namespace MeercatMonitor.Pages
+namespace MeercatMonitor.Pages
 {
     public static class Formatter
     {
