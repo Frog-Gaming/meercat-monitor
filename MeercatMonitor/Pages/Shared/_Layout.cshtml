@@ -49,5 +49,20 @@
 </head>
 <body>
     @RenderBody()
+    <div id="tooltip-overlay" popover="hint"></div>
+    <script>
+        const tt = document.getElementById('tooltip-overlay')
+        for (const x of document.querySelectorAll('.status[title]')){
+            x.addEventListener('mouseover', ev => {
+                tt.hidePopover()
+                const source = ev.target
+                tt.innerHTML = source.getAttribute('title')
+                tt.showPopover({'source': source})
+            })
+            x.addEventListener('mouseout', ev => {
+                tt.hidePopover()
+            })
+        }
+    </script>
 </body>
 </html>
