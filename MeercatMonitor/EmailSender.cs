@@ -1,6 +1,6 @@
+using System.Net;
 using MailKit.Net.Smtp;
 using MimeKit;
-using System.Net;
 
 namespace MeercatMonitor;
 
