@@ -25,6 +25,12 @@ public static class TestCommandHandler
                 log.Information("Sent test email to {Recipient}.", recipient);
                 return Result.Complete;
             }
+
+            var testconfig = "--testdata";
+            if (arg.StartsWith(testconfig))
+            {
+
+            }
         }
 
         return Result.None;
