@@ -3,30 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
+    <meta name="color-scheme" content="dark light">
     <title>@(ViewData["Title"] ?? "Online Status") - Meercat Monitor</title>
     <link rel="icon" href="~/favicon-64.avif" />
     <style>
-        :root {
-            color-scheme: light dark;
-        }
-
-        html {
-            background: light-dark(#eee, #111);
-            color: light-dark(#111, #ccc);
-        }
-
-        a:link {
-            color: light-dark(#118, #88f);
-        }
-
-        a:focus {
-            color: light-dark(#55f, #55f);
-        }
-
-        a:visited {
-            color: light-dark(#33f, #77f);
-        }
-
         .status-grid {
             display: grid;
             grid-template: "name status time ." "history history history history";
