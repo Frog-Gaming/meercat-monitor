@@ -7,48 +7,61 @@ public class OnlineStatusStore
     public OnlineStatusStore(TestConfig testConfig, Config config, ILogger<OnlineStatusStore> log)
     {
         _testConfig = testConfig;
-        foreach (var monitor in config.Monitors)
+        _log = log;
+
+        int? fillTestData = testConfig?.FillTestData;
+
+        var targets = config.Monitors.SelectMany(x => x.Addresses, (x, c) => new { Group = x, Target = c, });
+        foreach (var x in targets)
         {
-            foreach (var address in monitor.Addresses)
+            _mapping.Add(x.Target, x.Group);
+
+            if (fillTestData is not null)
             {
-                _mapping.Add(address, monitor);
-                string fileName = GetFileName(monitor, address);
-                if (!File.Exists(fileName)) continue;
-
-                var lines = File.ReadAllLines(fileName);
-                var lineJson = lines.Select(line => (line, json: JsonSerializer.Deserialize<Result>(line)));
-
-                foreach (var line in lineJson.Where(x => x.json is null).Select(x => x.line))
-                {
-                    log.LogWarning("Invalid data file {FileName} json line: {Line}", fileName, line);
-                }
-
-                var list = lineJson.Select(x => x.json).Where(x => x is not null).Cast<Result>().ToList();
-
-                _store[address] = list;
+                FillTestData(x.Target, fillTestData.Value);
+            }
+            else
+            {
+                LoadDataFromFile(x.Group, x.Target);
             }
         }
+    }
+
+    private void FillTestData(ToMonitorAddress target, int fillTestData)
+    {
+        for (var i = fillTestData; i > 0; i--)
+        {
+            var dto = DateTimeOffset.Now.AddMinutes(-10 * i);
+            Push(target, new(Status.Online, dto));
+        }
+    }
+
+    private void LoadDataFromFile(MonitorGroup group, ToMonitorAddress target)
+    {
+        string fileName = GetFileName(group, target);
+        if (!File.Exists(fileName)) return;
+
+        var lines = File.ReadAllLines(fileName);
+        var lineJson = lines.Select(line => (line, json: JsonSerializer.Deserialize<Result>(line)));
+
+        foreach (var line in lineJson.Where(x => x.json is null).Select(x => x.line))
+        {
+            _log.LogWarning("Invalid data file {FileName} json line: {Line}", fileName, line);
+        }
+
+        var list = lineJson.Select(x => x.json).Where(x => x is not null).Cast<Result>().ToList();
+
+        _store[target] = list;
     }
 
     private const int HistoryDisplayLimit = 24 * 60;
 
     private readonly Dictionary<ToMonitorAddress, List<Result>> _store = [];
-    private readonly TestConfig _testConfig;
     private readonly Dictionary<ToMonitorAddress, MonitorGroup> _mapping = [];
+    private readonly TestConfig _testConfig;
+    private readonly ILogger<OnlineStatusStore> _log;
 
-    public IEnumerable<Result> GetValues(ToMonitorAddress key)
-    {
-        if (_testConfig?.FillTestData is not null && !_store.ContainsKey(key))
-        {
-            for (var i = _testConfig.FillTestData.Value; i > 0; i--)
-            {
-                var dto = DateTimeOffset.Now.AddMinutes(-10 * i);
-                Push(key, new(Status.Online, dto));
-            }
-        }
-
-        return _store.TryGetValue(key, out var results) ? [.. results] : [];
-    }
+    public IEnumerable<Result> GetValues(ToMonitorAddress key) => _store.TryGetValue(key, out var results) ? [.. results] : [];
 
     public void SetNow(ToMonitorAddress key, Status status) => Push(key, new Result(status, DateTimeOffset.Now));
 
@@ -63,6 +76,10 @@ public class OnlineStatusStore
         if (list.Count >= HistoryDisplayLimit) list.RemoveAt(0);
 
         list.Add(result);
+
+        // During filled data test do not persist anything
+        if (_testConfig.FillTestData is not null) return;
+
         var json = JsonSerializer.Serialize(result);
         var fileName = GetFileName(_mapping[key], key);
         File.AppendAllText(fileName, json + Environment.NewLine);
