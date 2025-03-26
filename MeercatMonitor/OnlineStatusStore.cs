@@ -13,24 +13,23 @@ public class OnlineStatusStore
             {
                 _mapping.Add(address, monitor);
                 string fileName = GetFileName(monitor, address);
-                if (File.Exists(fileName))
+                if (!File.Exists(fileName)) continue;
+
+                var fileContent = File.ReadAllLines(fileName);
+                List<Result> results = new List<Result>();
+                foreach (var line in fileContent)
                 {
-                    var fileContent = File.ReadAllLines(fileName);
-                    List<Result> results = new List<Result>();
-                    foreach (var line in fileContent)
+                    Result? result = JsonSerializer.Deserialize<Result>(line);
+                    if (result != null)
                     {
-                        Result? result = JsonSerializer.Deserialize<Result>(line);
-                        if (result != null)
-                        {
-                            results.Add(result);
-                        }
-                        else
-                        {
-                            log.LogWarning("Invalid line in {FileName}: {Line}", fileName, line);
-                        }
+                        results.Add(result);
                     }
-                    _store[address] = results;
+                    else
+                    {
+                        log.LogWarning("Invalid line in {FileName}: {Line}", fileName, line);
+                    }
                 }
+                _store[address] = results;
             }
         }
     }
