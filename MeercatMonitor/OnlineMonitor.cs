@@ -2,7 +2,7 @@ using System.Net.Sockets;
 
 namespace MeercatMonitor;
 
-internal class OnlineMonitor(Config config, NotificationService _notify, ILogger<OnlineMonitor> _log, OnlineStatusStore _statusStore, TestConfig? _testConfig) : BackgroundService
+internal class OnlineMonitor(Config config, NotificationService _notify, ILogger<OnlineMonitor> _log, OnlineStatusStore _statusStore, TestConfig _testConfig) : BackgroundService
 {
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(config.CheckIntervalS));
     // Distinct() across groups and also work around duplicate config list values

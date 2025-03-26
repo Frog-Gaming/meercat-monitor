@@ -22,10 +22,8 @@ builder.Services.AddSerilog(ConfigureLogger);
 builder.Services.AddSingleton(config);
 builder.Services.AddRazorPages();
 
-if (args.Contains("--test"))
-{
-    builder.Services.AddSingleton(new TestConfig(SendMonitorRequests: false, SendEmails: true, FillTestData: 100));
-}
+var isTest = args.Contains("--test");
+builder.Services.AddSingleton(new TestConfig(SendMonitorRequests: !isTest, SendEmails: true, FillTestData: isTest ? 100 : 0));
 
 var host = builder.Build();
 host.UseStaticFiles();

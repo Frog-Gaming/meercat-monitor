@@ -4,7 +4,7 @@ using MimeKit;
 
 namespace MeercatMonitor;
 
-internal class EmailSender(Config _config, TestConfig? _testConfig)
+internal class EmailSender(Config _config, TestConfig _testConfig)
 {
     public void SendFor(ToMonitorAddress toMonitorAddress, bool isOnline)
     {

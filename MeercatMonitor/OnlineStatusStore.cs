@@ -1,6 +1,6 @@
 namespace MeercatMonitor;
 
-public class OnlineStatusStore(TestConfig? _testConfig)
+public class OnlineStatusStore(TestConfig _testConfig)
 {
     public enum Status { Unknown, Online, Offline, }
 
