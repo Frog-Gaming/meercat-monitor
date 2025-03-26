@@ -4,7 +4,7 @@ public record Config(int CheckIntervalS, MonitorGroup[] Monitors, MailAddress Se
 
 public record MonitorGroup(string Name, string Slug, ToMonitorAddress[] Addresses, MailAddress[] Recipients, Texts Texts);
 
-public record ToMonitorAddress(string Name, string Address);
+public record ToMonitorAddress(string Name, string Slug, string Address);
 
 public record MailAddress(string Name, string Address);
 public record MailServer(string Address, int Port, bool IgnoreCertValidation = true);

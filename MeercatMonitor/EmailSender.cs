@@ -96,7 +96,7 @@ internal class EmailSender(Config _config, TestConfig _testConfig)
             BodyHtmlWentOnline: "<p>🐿️🥜 Your website {websiteAddress} is <strong>up</strong> again. lol 👌</p>",
             BodyHtmlWentOffline: "<p>🐿️🥜 Your website {websiteAddress} is <strong>down</strong>. lol 👌</p>"
         );
-        SetMessageText(message, new ToMonitorAddress("<fake website name>", "<fake-website-for-testing>"), websiteIsOnline: true, texts);
+        SetMessageText(message, new ToMonitorAddress("<fake website name>", "<fake-slug>", "<fake-website-for-testing>"), websiteIsOnline: true, texts);
 
         Send(message, config);
     }
