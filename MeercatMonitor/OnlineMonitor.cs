@@ -35,6 +35,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
         try
         {
             using HttpClient c = new();
+            c.Timeout = TimeSpan.FromSeconds(10);
 
             HttpRequestMessage req = new(HttpMethod.Head, toMonitorAddress.Address);
             HttpResponseMessage res = await c.SendAsync(req);
