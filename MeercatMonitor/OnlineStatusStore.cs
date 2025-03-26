@@ -29,6 +29,7 @@ public class OnlineStatusStore
             }
         }
     }
+
     private const int HistoryLimit = 24 * 60;
 
     private readonly Dictionary<ToMonitorAddress, List<Result>> _store = [];
