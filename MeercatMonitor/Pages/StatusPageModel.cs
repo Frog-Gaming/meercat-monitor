@@ -3,7 +3,7 @@ namespace MeercatMonitor.Pages
     public class StatusPageModels
     {
         public record GroupResultsModel(MonitorGroup Group, TargetResultsModel[] Results);
-        public record TargetResultsModel(ToMonitorAddress Target, OnlineStatusStore.Result[] Results);
+        public record TargetResultsModel(ToMonitorAddress Target, Result[] Results);
 
         public static GroupResultsModel GetGroupResults(MonitorGroup group, OnlineStatusStore _store)
         {

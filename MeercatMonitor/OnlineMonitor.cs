@@ -92,7 +92,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
     {
         _log.LogDebug("{WebsiteAddress} is {Status}", toMonitorAddress.Address, isOnline ? "online" : "offline");
 
-        var newStatus = isOnline ? OnlineStatusStore.Status.Online : OnlineStatusStore.Status.Offline;
+        var newStatus = isOnline ? Status.Online : Status.Offline;
 
         var prevStates = _statusStore.GetValues(toMonitorAddress);
         // Ignore the first visit - we only have online status *change* events
@@ -105,7 +105,7 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
         var prevStatus = prevStates.Last().Status;
         if (prevStatus != newStatus)
         {
-            _notify.HandleStatusChange(toMonitorAddress, isOnline: newStatus == OnlineStatusStore.Status.Online);
+            _notify.HandleStatusChange(toMonitorAddress, isOnline: newStatus == Status.Online);
         }
 
         _statusStore.SetNow(toMonitorAddress, newStatus);

@@ -2,10 +2,6 @@ namespace MeercatMonitor;
 
 public class OnlineStatusStore(TestConfig _testConfig)
 {
-    public enum Status { Unknown, Online, Offline, }
-
-    public record Result(Status Status, DateTimeOffset Time);
-
     private const int HistoryLimit = 24 * 60;
 
     private readonly Dictionary<ToMonitorAddress, List<Result>> _store = [];
