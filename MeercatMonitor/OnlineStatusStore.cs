@@ -7,8 +7,7 @@ public class OnlineStatusStore
     public OnlineStatusStore(TestConfig testConfig, Config config, ILogger<OnlineStatusStore> _log)
     {
         _testConfig = testConfig;
-        _config = config;
-        foreach (var monitor in _config.Monitors)
+        foreach (var monitor in config.Monitors)
         {
             foreach (var address in monitor.Addresses)
             {
@@ -39,7 +38,6 @@ public class OnlineStatusStore
 
     private readonly Dictionary<ToMonitorAddress, List<Result>> _store = [];
     private readonly TestConfig _testConfig;
-    private readonly Config _config;
     private readonly Dictionary<ToMonitorAddress, MonitorGroup> _mapping = [];
 
     public IEnumerable<Result> GetValues(ToMonitorAddress key)
