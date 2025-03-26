@@ -4,7 +4,7 @@ namespace MeercatMonitor;
 
 public class OnlineStatusStore
 {
-    public OnlineStatusStore(TestConfig testConfig, Config config, ILogger<OnlineStatusStore> _log)
+    public OnlineStatusStore(TestConfig testConfig, Config config, ILogger<OnlineStatusStore> log)
     {
         _testConfig = testConfig;
         foreach (var monitor in config.Monitors)
@@ -26,7 +26,7 @@ public class OnlineStatusStore
                         }
                         else
                         {
-                            _log.LogWarning("Invalid line in {FileName}: {Line}", fileName, line);
+                            log.LogWarning("Invalid line in {FileName}: {Line}", fileName, line);
                         }
                     }
                     _store[address] = results;
