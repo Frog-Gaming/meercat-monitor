@@ -15,21 +15,17 @@ public class OnlineStatusStore
                 string fileName = GetFileName(monitor, address);
                 if (!File.Exists(fileName)) continue;
 
-                var fileContent = File.ReadAllLines(fileName);
-                List<Result> results = new List<Result>();
-                foreach (var line in fileContent)
+                var lines = File.ReadAllLines(fileName);
+                var lineJson = lines.Select(line => (line, json: JsonSerializer.Deserialize<Result>(line)));
+
+                foreach (var line in lineJson.Where(x => x.json is null).Select(x => x.line))
                 {
-                    Result? result = JsonSerializer.Deserialize<Result>(line);
-                    if (result != null)
-                    {
-                        results.Add(result);
-                    }
-                    else
-                    {
-                        log.LogWarning("Invalid line in {FileName}: {Line}", fileName, line);
-                    }
+                    log.LogWarning("Invalid data file {FileName} json line: {Line}", fileName, line);
                 }
-                _store[address] = results;
+
+                var list = lineJson.Select(x => x.json).Where(x => x is not null).Cast<Result>().ToList();
+
+                _store[address] = list;
             }
         }
     }
