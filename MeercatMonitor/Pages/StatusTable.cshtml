@@ -2,13 +2,15 @@
 @using static MeercatMonitor.OnlineStatusStore
 @model StatusPageModels.GroupResultsModel
 
-<div class="status-grid">
-    @foreach (var targetResults in Model.Results)
-    {
+@foreach (var targetResults in Model.Results)
+{
+    <div class="status-grid">
         <span class="target" title="@targetResults.Target.Address">@targetResults.Target.Name</span>
 
-        var lastResult = targetResults.Results.LastOrDefault();
-        if (lastResult == default) break;
+        @{
+            var lastResult = targetResults.Results.LastOrDefault();
+            if (lastResult == default) break;
+        }
 
         <div class="status">@Formatter.FormatText(lastResult.Status)</div>
         <div class="time" title="state from"><time datetime="@lastResult.Time.ToString("u")">@lastResult.Time.ToString("u")</time></div>
@@ -24,5 +26,5 @@
                 </div>
             }
         </div>
-    }
-</div>
+    </div>
+}
