@@ -61,6 +61,8 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
         try
         {
             using TcpClient tcp = new();
+            tcp.SendTimeout = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
+            tcp.ReceiveTimeout = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
             await tcp.ConnectAsync(hostname, port);
             using var stream = tcp.GetStream();
             stream.Close();
