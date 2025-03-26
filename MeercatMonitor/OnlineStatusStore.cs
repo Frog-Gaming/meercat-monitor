@@ -30,7 +30,7 @@ public class OnlineStatusStore
         }
     }
 
-    private const int HistoryLimit = 24 * 60;
+    private const int HistoryDisplayLimit = 24 * 60;
 
     private readonly Dictionary<ToMonitorAddress, List<Result>> _store = [];
     private readonly TestConfig _testConfig;
@@ -60,7 +60,7 @@ public class OnlineStatusStore
             _store[key] = list;
         }
 
-        if (list.Count >= HistoryLimit) list.RemoveAt(0);
+        if (list.Count >= HistoryDisplayLimit) list.RemoveAt(0);
 
         list.Add(result);
         var json = JsonSerializer.Serialize(result);
