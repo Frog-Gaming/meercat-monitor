@@ -1,9 +1,12 @@
+using System.Text;
 using System.Text.Json;
 
 namespace MeercatMonitor;
 
 public class OnlineStatusStore
 {
+    public Encoding TextEncoding { get; } = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+
     public OnlineStatusStore(TestConfig testConfig, Config config, ILogger<OnlineStatusStore> log)
     {
         _testConfig = testConfig;
@@ -43,7 +46,7 @@ public class OnlineStatusStore
         string fileName = GetFileName(group, target);
         if (!File.Exists(fileName)) return;
 
-        var lines = File.ReadAllLines(fileName);
+        var lines = File.ReadAllLines(fileName, TextEncoding);
         var lineJson = lines.Select(line => (line, json: JsonSerializer.Deserialize<Result>(line)));
 
         foreach (var line in lineJson.Where(x => x.json is null).Select(x => x.line))
@@ -84,7 +87,7 @@ public class OnlineStatusStore
 
         var json = JsonSerializer.Serialize(result);
         var fileName = GetFileName(_mapping[key], key);
-        File.AppendAllText(fileName, json + Environment.NewLine);
+        File.AppendAllText(fileName, json + Environment.NewLine, TextEncoding);
     }
 
     private static string GetFileName(MonitorGroup group, MonitorTarget target)
