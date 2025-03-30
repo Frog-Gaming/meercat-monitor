@@ -46,7 +46,7 @@ public class OnlineStatusStore
         string fileName = GetFileName(group, target);
         if (!File.Exists(fileName)) return;
 
-        var lines = File.ReadAllLines(fileName, TextEncoding);
+        var lines = File.ReadAllLines(fileName, TextEncoding).Take(HistoryDisplayLimit);
         var lineJson = lines.Select(line => (line, json: JsonSerializer.Deserialize<Result>(line)));
 
         foreach (var line in lineJson.Where(x => x.json is null).Select(x => x.line))
