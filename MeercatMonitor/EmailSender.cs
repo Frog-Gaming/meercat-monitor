@@ -59,7 +59,8 @@ public class EmailSender(Config _config, TestConfig _testConfig)
 
         static string FillTemplate(string template, MonitorTarget target, bool html)
         {
-            var targetAddress = html ? WebUtility.HtmlEncode(target.Address) : target.Address;
+            var uriStr = target.Address.ToString();
+            var targetAddress = html ? WebUtility.HtmlEncode(uriStr) : uriStr;
 
             return template.Replace("{TargetName}", target.Name).Replace("{TargetAddress}", targetAddress);
         }
@@ -84,6 +85,7 @@ public class EmailSender(Config _config, TestConfig _testConfig)
         }
     }
 
+    [SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "<Pending>")]
     public static void SendTestEmail(Config config, string recipientAddress)
     {
         var message = CreateMessage(ConvertAddress(config.Sender), [new MailboxAddress(recipientAddress, recipientAddress)]);
@@ -95,7 +97,7 @@ public class EmailSender(Config _config, TestConfig _testConfig)
             BodyHtmlWentOnline: "<p>🐿️🥜 Your website {TargetAddress} is <strong>up</strong> again. lol 👌</p>",
             BodyHtmlWentOffline: "<p>🐿️🥜 Your website {TargetAddress} is <strong>down</strong>. lol 👌</p>"
         );
-        SetMessageText(message, new MonitorTarget("<fake website name>", "<fake-slug>", "<fake-website-for-testing>"), websiteIsOnline: true, texts);
+        SetMessageText(message, new MonitorTarget("<fake website name>", "<fake-slug>", new Uri("http://<fake-website-for-testing>")), websiteIsOnline: true, texts);
 
         Send(message, config);
     }
