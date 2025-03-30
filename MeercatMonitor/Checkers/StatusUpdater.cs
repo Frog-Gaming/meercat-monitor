@@ -8,7 +8,7 @@ public class StatusUpdater(
 {
     public void UpdateStatus(MonitorTarget target, bool isOnline, TimeSpan responseTime)
     {
-        _log.LogDebug("{WebsiteAddress} is {Status}", target.Address, isOnline ? "online" : "offline");
+        _log.LogDebug("{TargetAddress} is {Status}", target.Address, isOnline ? "online" : "offline");
 
         var newStatus = isOnline ? Status.Online : Status.Offline;
 

@@ -59,10 +59,9 @@ public class EmailSender(Config _config, TestConfig _testConfig)
 
         static string FillTemplate(string template, MonitorTarget target, bool html)
         {
-            var websiteName = target.Name;
-            var websiteAddress = html ? WebUtility.HtmlEncode(target.Address) : target.Address;
+            var targetAddress = html ? WebUtility.HtmlEncode(target.Address) : target.Address;
 
-            return template.Replace("{websiteName}", websiteName).Replace("{websiteAddress}", websiteAddress);
+            return template.Replace("{TargetName}", target.Name).Replace("{TargetAddress}", targetAddress);
         }
     }
 
@@ -89,12 +88,12 @@ public class EmailSender(Config _config, TestConfig _testConfig)
     {
         var message = CreateMessage(ConvertAddress(config.Sender), [new MailboxAddress(recipientAddress, recipientAddress)]);
         var texts = new Texts(
-            SubjWentOnline: "GAWWK GAWWK your website {websiteName} is up again",
-            SubjWentOffline: "GAWWK GAWWK your website {websiteName} is down",
-            BodyPlainWentOnline: "🐿️🥜 Your website {websiteAddress} is up again. lol 👌",
-            BodyPlainWentOffline: "🐿️🥜 Your website {websiteAddress} is down. lol 👌",
-            BodyHtmlWentOnline: "<p>🐿️🥜 Your website {websiteAddress} is <strong>up</strong> again. lol 👌</p>",
-            BodyHtmlWentOffline: "<p>🐿️🥜 Your website {websiteAddress} is <strong>down</strong>. lol 👌</p>"
+            SubjWentOnline: "GAWWK GAWWK your website {TargetName} is up again",
+            SubjWentOffline: "GAWWK GAWWK your website {TargetName} is down",
+            BodyPlainWentOnline: "🐿️🥜 Your website {TargetAddress} is up again. lol 👌",
+            BodyPlainWentOffline: "🐿️🥜 Your website {TargetAddress} is down. lol 👌",
+            BodyHtmlWentOnline: "<p>🐿️🥜 Your website {TargetAddress} is <strong>up</strong> again. lol 👌</p>",
+            BodyHtmlWentOffline: "<p>🐿️🥜 Your website {TargetAddress} is <strong>down</strong>. lol 👌</p>"
         );
         SetMessageText(message, new MonitorTarget("<fake website name>", "<fake-slug>", "<fake-website-for-testing>"), websiteIsOnline: true, texts);
 

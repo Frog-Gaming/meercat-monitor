@@ -25,7 +25,7 @@ internal class OnlineMonitor(Config config
         }
         else
         {
-            _log.LogWarning("Unknown protocol on {WebsiteAddress}", (string?)target.Address);
+            _log.LogWarning("Unknown protocol on {TargetAddress}", (string?)target.Address);
         }
     }
 
