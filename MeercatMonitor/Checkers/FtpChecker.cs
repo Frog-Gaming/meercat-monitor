@@ -8,18 +8,12 @@ public class FtpChecker(ILogger<FtpChecker> _log, StatusUpdater _statusUpdater) 
     public static TimeSpan Timeout { get; } = TimeSpan.FromSeconds(10);
     public static bool OpenStream { get; } = false;
 
-    public bool Supports(MonitorTarget target) => target.Address.StartsWith("ftp://");
+    public bool Supports(MonitorTarget target) => target.Address.Scheme is "ftp";
 
     public async Task CheckAsync(MonitorTarget target)
     {
-        if (!Uri.TryCreate(target.Address, UriKind.Absolute, out var uri))
-        {
-            _log.LogWarning("Invalid FTP address will be ignored; must be a valid Uri but is `{TargetAddress}`", target.Address);
-            return;
-        }
-
-        var hostname = uri.Host;
-        var port = uri.Port;
+        var hostname = target.Address.Host;
+        var port = target.Address.Port;
         _log.LogDebug("Testing FTP (TCP) {Hostname}:{Port}…", hostname, port);
 
         var sw = Stopwatch.StartNew();
