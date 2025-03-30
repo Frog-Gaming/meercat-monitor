@@ -7,24 +7,30 @@
     <div class="status-grid">
         <span class="target" title="@targetResults.Target.Address">@targetResults.Target.Name</span>
 
-        @{
-            var lastResult = targetResults.Results.LastOrDefault();
-            if (lastResult == default) break;
+        @if (targetResults.Results.Length == 0)
+        {
+            <div class="status"><i>No result data available yet</i></div>
+            var time = DateTimeOffset.Now;
+            <div class="time" title="state from"><time datetime="@time.ToString("u")">@time.ToString("u")</time></div>
         }
+        else
+        {
+          var lastResult = targetResults.Results[^1];
 
-        <div class="status">@Formatter.FormatText(lastResult.Status)</div>
-        <div class="time" title="state from"><time datetime="@lastResult.Time.ToString("u")">@lastResult.Time.ToString("u")</time></div>
+          <div class="status">@Formatter.FormatText(lastResult.Status)</div>
+          <div class="time" title="state from"><time datetime="@lastResult.Time.ToString("u")">@lastResult.Time.ToString("u")</time></div>
 
-        <div class="history">
-            @foreach (var result in targetResults.Results)
-            {
-                var tooltip = $"{result.Time.ToString("u")} {result.ResponseTime.TotalMilliseconds:N0} ms";
-                var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds / 50):D}";
-                <div class="status @Formatter.GetOnlineClass(result.Status)"
-                     title="@tooltip"
-                     style="height: @(heightPx)px">
-                </div>
-            }
-        </div>
+          <div class="history">
+              @foreach (var result in targetResults.Results)
+              {
+                  var tooltip = $"{result.Time.ToString("u")} {result.ResponseTime.TotalMilliseconds:N0} ms";
+                  var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds / 50):D}";
+                  <div class="status @Formatter.GetOnlineClass(result.Status)"
+                       title="@tooltip"
+                       style="height: @(heightPx)px">
+                  </div>
+              }
+          </div>
+        }
     </div>
 }
