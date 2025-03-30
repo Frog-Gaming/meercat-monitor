@@ -4,6 +4,8 @@ namespace MeercatMonitor.Checkers;
 
 public class HttpChecker(ILogger<HttpChecker> _log, StatusUpdater _statusUpdater) : IChecker
 {
+    public TimeSpan Timeout { get; } = TimeSpan.FromSeconds(10);
+
     public bool Supports(MonitorTarget target) => target.Address.Scheme is "http" or "https";
 
     public async Task CheckAsync(MonitorTarget target)
@@ -14,7 +16,7 @@ public class HttpChecker(ILogger<HttpChecker> _log, StatusUpdater _statusUpdater
         try
         {
             using HttpClient c = new();
-            c.Timeout = TimeSpan.FromSeconds(10);
+            c.Timeout = Timeout;
 
             HttpRequestMessage req = new(HttpMethod.Head, target.Address);
             HttpResponseMessage res = await c.SendAsync(req);
