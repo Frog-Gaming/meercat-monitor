@@ -7,11 +7,17 @@
     <title>@(ViewData["Title"] ?? "Online Status") - Meercat Monitor</title>
     <link rel="icon" href="~/favicon-64.avif" />
     <style>
+        :root {
+          padding: 0 1em;
+        }
+
         .status-grid {
             display: grid;
             grid-template: "name status time ." "history history history history";
             gap: 1em;
             justify-content: start;
+
+            margin-bottom: 2em;
         }
 
         .status-grid > * {
