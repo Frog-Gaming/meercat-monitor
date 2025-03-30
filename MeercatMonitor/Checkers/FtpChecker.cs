@@ -5,6 +5,9 @@ namespace MeercatMonitor.Checkers;
 
 public class FtpChecker(ILogger<FtpChecker> _log, StatusUpdater _statusUpdater) : IChecker
 {
+    public static TimeSpan Timeout { get; } = TimeSpan.FromSeconds(10);
+    public static bool OpenStream { get; } = false;
+
     public bool Supports(ToMonitorAddress target) => target.Address.StartsWith("ftp://");
 
     public async Task CheckAsync(ToMonitorAddress target)
@@ -23,11 +26,20 @@ public class FtpChecker(ILogger<FtpChecker> _log, StatusUpdater _statusUpdater) 
         try
         {
             using TcpClient tcp = new();
-            tcp.SendTimeout = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
-            tcp.ReceiveTimeout = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
-            await tcp.ConnectAsync(hostname, port);
-            using var stream = tcp.GetStream();
-            stream.Close();
+            tcp.SendTimeout = (int)Timeout.TotalMilliseconds;
+            tcp.ReceiveTimeout = (int)Timeout.TotalMilliseconds;
+            var connected = await WithTimeoutAsync(Timeout, (cToken) => tcp.ConnectAsync(hostname, port, cToken));
+            if (!connected)
+            {
+                _log.LogDebug("Failed to connect; Timeout {Timeout} s", Timeout.TotalSeconds);
+                return;
+            }
+
+            if (OpenStream)
+            {
+                using var stream = tcp.GetStream();
+                stream.Close();
+            }
 
             _statusUpdater.UpdateStatus(target, isOnline: true, sw.Elapsed);
         }
@@ -44,5 +56,16 @@ public class FtpChecker(ILogger<FtpChecker> _log, StatusUpdater _statusUpdater) 
 
             _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed);
         }
+    }
+
+    private static async Task<bool> WithTimeoutAsync(TimeSpan timeout, Func<CancellationToken, ValueTask> fn)
+    {
+        using var cts = new CancellationTokenSource();
+        var task = fn(cts.Token).AsTask();
+        var timeoutTask = Task.Delay(timeout, cts.Token);
+        var r = await Task.WhenAny(task, timeoutTask);
+        await cts.CancelAsync();
+
+        return r == task;
     }
 }
