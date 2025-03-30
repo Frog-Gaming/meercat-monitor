@@ -45,7 +45,7 @@ stream.Close();
 Console.WriteLine("end");
 Console.ReadLine();
 
-async Task<bool> WithTimeoutAsync(TimeSpan timeout, Func<CancellationToken, ValueTask> fn)
+static async Task<bool> WithTimeoutAsync(TimeSpan timeout, Func<CancellationToken, ValueTask> fn)
 {
     using var cts = new CancellationTokenSource();
     var task = fn(cts.Token).AsTask();
