@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".github/workflows/build.yml" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="nuget.config" />
+  </Folder>
+  <Folder Name="/Solution Items/docs/">
+    <File Path="docs/overview.md" />
+  </Folder>
+  <Project Path="MeercatMonitor/MeercatMonitor.csproj" />
+  <Project Path="TcpClient/TcpClient.csproj" />
+  <Project Path="TcpServer/TcpServer.csproj" />
+</Solution>
