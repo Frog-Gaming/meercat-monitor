@@ -9,7 +9,7 @@
     <File Path="nuget.config" />
     <File Path="README.md" />
   </Folder>
-  <Folder Name="/Solution Items/docs/">
+  <Folder Name="/Solution Items/docs/" Id="7b439073-6f30-63b1-5eed-b07cc31cf721">
     <File Path="docs/overview.md" />
   </Folder>
   <Project Path="MeercatMonitor/MeercatMonitor.csproj" />
