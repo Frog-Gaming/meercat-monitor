@@ -11,19 +11,19 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
 
     private async Task CheckAddressAsync(ToMonitorAddress toMonitorAddress)
     {
-        var websiteAddress = toMonitorAddress.Address;
+        var targetAddress = toMonitorAddress.Address;
 
-        if (websiteAddress.StartsWith("http://") || websiteAddress.StartsWith("https://"))
+        if (targetAddress.StartsWith("http://") || targetAddress.StartsWith("https://"))
         {
             await CheckHttpAsync(toMonitorAddress);
         }
-        else if (websiteAddress.StartsWith("ftp://"))
+        else if (targetAddress.StartsWith("ftp://"))
         {
             await CheckFtpAsync(toMonitorAddress);
         }
         else
         {
-            _log.LogWarning("Unknown protocol on {WebsiteAddress}", websiteAddress);
+            _log.LogWarning("Unknown protocol on {WebsiteAddress}", targetAddress);
         }
     }
 
