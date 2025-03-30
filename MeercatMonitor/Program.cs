@@ -1,4 +1,5 @@
 using MeercatMonitor;
+using MeercatMonitor.Checkers;
 
 var config = LoadConfigFile();
 
@@ -18,6 +19,9 @@ builder.Services.AddHostedService<OnlineMonitor>();
 builder.Services.AddSingleton<NotificationService>();
 builder.Services.AddSingleton<EmailSender>();
 builder.Services.AddSingleton<OnlineStatusStore>();
+builder.Services.AddSingleton<StatusUpdater>();
+builder.Services.AddSingleton<HttpChecker>();
+builder.Services.AddSingleton<FtpChecker>();
 builder.Services.AddSerilog(ConfigureLogger);
 builder.Services.AddSingleton(config);
 builder.Services.AddRazorPages();
