@@ -8,9 +8,9 @@ public class FtpChecker(ILogger<FtpChecker> _log, StatusUpdater _statusUpdater) 
     public static TimeSpan Timeout { get; } = TimeSpan.FromSeconds(10);
     public static bool OpenStream { get; } = false;
 
-    public bool Supports(ToMonitorAddress target) => target.Address.StartsWith("ftp://");
+    public bool Supports(MonitorTarget target) => target.Address.StartsWith("ftp://");
 
-    public async Task CheckAsync(ToMonitorAddress target)
+    public async Task CheckAsync(MonitorTarget target)
     {
         if (!Uri.TryCreate(target.Address, UriKind.Absolute, out var uri))
         {

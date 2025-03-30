@@ -2,9 +2,9 @@ namespace MeercatMonitor
 {
     public class NotificationService(EmailSender _email)
     {
-        public void HandleStatusChange(ToMonitorAddress toMonitorAddress, bool isOnline)
+        public void HandleStatusChange(MonitorTarget target, bool isOnline)
         {
-            _email.SendFor(toMonitorAddress, isOnline);
+            _email.SendFor(target, isOnline);
         }
     }
 }

@@ -11,7 +11,7 @@ public class OnlineStatusStore
 
         int? fillTestData = testConfig?.FillTestData;
 
-        var targets = config.Monitors.SelectMany(x => x.Addresses, (x, c) => new { Group = x, Target = c, });
+        var targets = config.Monitors.SelectMany(x => x.Targets, (x, c) => new { Group = x, Target = c, });
         foreach (var x in targets)
         {
             _mapping.Add(x.Target, x.Group);
@@ -27,7 +27,7 @@ public class OnlineStatusStore
         }
     }
 
-    private void FillTestData(ToMonitorAddress target, int fillTestData)
+    private void FillTestData(MonitorTarget target, int fillTestData)
     {
         for (var i = fillTestData; i > 0; i--)
         {
@@ -38,7 +38,7 @@ public class OnlineStatusStore
         }
     }
 
-    private void LoadDataFromFile(MonitorGroup group, ToMonitorAddress target)
+    private void LoadDataFromFile(MonitorGroup group, MonitorTarget target)
     {
         string fileName = GetFileName(group, target);
         if (!File.Exists(fileName)) return;
@@ -58,16 +58,16 @@ public class OnlineStatusStore
 
     private const int HistoryDisplayLimit = 24 * 60;
 
-    private readonly Dictionary<ToMonitorAddress, List<Result>> _store = [];
-    private readonly Dictionary<ToMonitorAddress, MonitorGroup> _mapping = [];
+    private readonly Dictionary<MonitorTarget, List<Result>> _store = [];
+    private readonly Dictionary<MonitorTarget, MonitorGroup> _mapping = [];
     private readonly TestConfig _testConfig;
     private readonly ILogger<OnlineStatusStore> _log;
 
-    public IEnumerable<Result> GetValues(ToMonitorAddress key) => _store.TryGetValue(key, out var results) ? [.. results] : [];
+    public IEnumerable<Result> GetValues(MonitorTarget key) => _store.TryGetValue(key, out var results) ? [.. results] : [];
 
-    public void SetNow(ToMonitorAddress key, Status status, TimeSpan responseTime) => Push(key, new Result(status, DateTimeOffset.Now, responseTime));
+    public void SetNow(MonitorTarget key, Status status, TimeSpan responseTime) => Push(key, new Result(status, DateTimeOffset.Now, responseTime));
 
-    private void Push(ToMonitorAddress key, Result result)
+    private void Push(MonitorTarget key, Result result)
     {
         if (!_store.TryGetValue(key, out var list))
         {
@@ -87,7 +87,7 @@ public class OnlineStatusStore
         File.AppendAllText(fileName, json + Environment.NewLine);
     }
 
-    private static string GetFileName(MonitorGroup group, ToMonitorAddress target)
+    private static string GetFileName(MonitorGroup group, MonitorTarget target)
     {
         return $"{group.Slug}{target.Slug}.jsonl";
     }

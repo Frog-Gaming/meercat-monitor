@@ -4,9 +4,9 @@ namespace MeercatMonitor.Checkers
 {
     public class HttpChecker(ILogger<HttpChecker> _log, StatusUpdater _statusUpdater) : IChecker
     {
-        public bool Supports(ToMonitorAddress target) => target.Address.StartsWith("http://") || target.Address.StartsWith("https://");
+        public bool Supports(MonitorTarget target) => target.Address.StartsWith("http://") || target.Address.StartsWith("https://");
 
-        public async Task CheckAsync(ToMonitorAddress target)
+        public async Task CheckAsync(MonitorTarget target)
         {
             _log.LogDebug("Checking {WebsiteAddress}…", target.Address);
 

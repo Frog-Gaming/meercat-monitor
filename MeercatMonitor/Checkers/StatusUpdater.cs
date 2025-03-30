@@ -6,26 +6,26 @@ public class StatusUpdater(
     , OnlineStatusStore _statusStore
     )
 {
-    public void UpdateStatus(ToMonitorAddress toMonitorAddress, bool isOnline, TimeSpan responseTime)
+    public void UpdateStatus(MonitorTarget target, bool isOnline, TimeSpan responseTime)
     {
-        _log.LogDebug("{WebsiteAddress} is {Status}", toMonitorAddress.Address, isOnline ? "online" : "offline");
+        _log.LogDebug("{WebsiteAddress} is {Status}", target.Address, isOnline ? "online" : "offline");
 
         var newStatus = isOnline ? Status.Online : Status.Offline;
 
-        var prevStates = _statusStore.GetValues(toMonitorAddress);
+        var prevStates = _statusStore.GetValues(target);
         // Ignore the first visit - we only have online status *change* events
         if (!prevStates.Any())
         {
-            _statusStore.SetNow(toMonitorAddress, newStatus, responseTime);
+            _statusStore.SetNow(target, newStatus, responseTime);
             return;
         }
 
         var prevStatus = prevStates.Last().Status;
         if (prevStatus != newStatus)
         {
-            _notify.HandleStatusChange(toMonitorAddress, isOnline: newStatus == Status.Online);
+            _notify.HandleStatusChange(target, isOnline: newStatus == Status.Online);
         }
 
-        _statusStore.SetNow(toMonitorAddress, newStatus, responseTime);
+        _statusStore.SetNow(target, newStatus, responseTime);
     }
 }

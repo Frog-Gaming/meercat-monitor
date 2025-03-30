@@ -6,14 +6,14 @@ namespace MeercatMonitor;
 
 public class EmailSender(Config _config, TestConfig _testConfig)
 {
-    public void SendFor(ToMonitorAddress toMonitorAddress, bool isOnline)
+    public void SendFor(MonitorTarget target, bool isOnline)
     {
-        foreach (var monitorGroup in _config.Monitors.Where(x => x.Addresses.Contains(toMonitorAddress)))
+        foreach (var monitorGroup in _config.Monitors.Where(x => x.Targets.Contains(target)))
         {
             // Distinct() as a workaround for duplicate config list values
             var recipients = monitorGroup.Recipients.Distinct().ToArray();
             var message = CreateMessage(_config.Sender, recipients);
-            SetMessageText(message, toMonitorAddress, isOnline, monitorGroup.Texts);
+            SetMessageText(message, target, isOnline, monitorGroup.Texts);
 
             if (!(_testConfig?.SendEmails ?? true)) return;
 
@@ -33,34 +33,34 @@ public class EmailSender(Config _config, TestConfig _testConfig)
 
     private static MailboxAddress ConvertAddress(MailAddress addr) => new(addr.Name, addr.Address);
 
-    private static void SetMessageText(MimeMessage message, ToMonitorAddress toMonitorAddress, bool websiteIsOnline, Texts texts)
+    private static void SetMessageText(MimeMessage message, MonitorTarget target, bool websiteIsOnline, Texts texts)
     {
         var subjectTemplate = websiteIsOnline ? texts.SubjWentOnline : texts.SubjWentOffline;
-        message.Subject = FillTemplate(subjectTemplate, toMonitorAddress, html: false);
+        message.Subject = FillTemplate(subjectTemplate, target, html: false);
 
         var builder = new BodyBuilder();
         if (websiteIsOnline && texts.BodyPlainWentOnline is not null)
         {
-            builder.TextBody = FillTemplate(texts.BodyPlainWentOnline, toMonitorAddress, html: false);
+            builder.TextBody = FillTemplate(texts.BodyPlainWentOnline, target, html: false);
         }
         if (!websiteIsOnline && texts.BodyPlainWentOffline is not null)
         {
-            builder.TextBody = FillTemplate(texts.BodyPlainWentOffline, toMonitorAddress, html: false);
+            builder.TextBody = FillTemplate(texts.BodyPlainWentOffline, target, html: false);
         }
         if (websiteIsOnline && texts.BodyHtmlWentOnline is not null)
         {
-            builder.HtmlBody = FillTemplate(texts.BodyHtmlWentOnline, toMonitorAddress, html: true);
+            builder.HtmlBody = FillTemplate(texts.BodyHtmlWentOnline, target, html: true);
         }
         if (!websiteIsOnline && texts.BodyHtmlWentOffline is not null)
         {
-            builder.HtmlBody = FillTemplate(texts.BodyHtmlWentOffline, toMonitorAddress, html: true);
+            builder.HtmlBody = FillTemplate(texts.BodyHtmlWentOffline, target, html: true);
         }
         message.Body = builder.ToMessageBody();
 
-        static string FillTemplate(string template, ToMonitorAddress toMonitorAddress, bool html)
+        static string FillTemplate(string template, MonitorTarget target, bool html)
         {
-            var websiteName = toMonitorAddress.Name;
-            var websiteAddress = html ? WebUtility.HtmlEncode(toMonitorAddress.Address) : toMonitorAddress.Address;
+            var websiteName = target.Name;
+            var websiteAddress = html ? WebUtility.HtmlEncode(target.Address) : target.Address;
 
             return template.Replace("{websiteName}", websiteName).Replace("{websiteAddress}", websiteAddress);
         }
@@ -96,7 +96,7 @@ public class EmailSender(Config _config, TestConfig _testConfig)
             BodyHtmlWentOnline: "<p>🐿️🥜 Your website {websiteAddress} is <strong>up</strong> again. lol 👌</p>",
             BodyHtmlWentOffline: "<p>🐿️🥜 Your website {websiteAddress} is <strong>down</strong>. lol 👌</p>"
         );
-        SetMessageText(message, new ToMonitorAddress("<fake website name>", "<fake-slug>", "<fake-website-for-testing>"), websiteIsOnline: true, texts);
+        SetMessageText(message, new MonitorTarget("<fake website name>", "<fake-slug>", "<fake-website-for-testing>"), websiteIsOnline: true, texts);
 
         Send(message, config);
     }
