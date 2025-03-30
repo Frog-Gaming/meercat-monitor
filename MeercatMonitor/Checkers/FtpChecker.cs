@@ -3,10 +3,10 @@ using System.Net.Sockets;
 
 namespace MeercatMonitor.Checkers;
 
-public class FtpChecker(ILogger<FtpChecker> _log, StatusUpdater _statusUpdater) : IChecker
+public class FtpChecker(ILogger<FtpChecker> _log, StatusUpdater _statusUpdater, Config _config) : IChecker
 {
-    public static TimeSpan Timeout { get; } = TimeSpan.FromSeconds(10);
-    public static bool OpenStream { get; } = false;
+    public TimeSpan Timeout { get; } = TimeSpan.FromSeconds(_config.CheckTimeoutS ?? 10);
+    public bool OpenStream { get; } = false;
 
     public bool Supports(MonitorTarget target) => target.Address.Scheme is "ftp";
 

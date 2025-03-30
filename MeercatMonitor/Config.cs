@@ -1,6 +1,6 @@
 namespace MeercatMonitor;
 
-public record Config(int CheckIntervalS, MonitorGroup[] Monitors, MailAddress Sender, MailServer MailServer);
+public record Config(int CheckIntervalS, int? CheckTimeoutS, int? HistoryDisplayLimit, MonitorGroup[] Monitors, MailAddress Sender, MailServer MailServer);
 
 public record MonitorGroup(string Name, string Slug, MonitorTarget[] Targets, MailAddress[] Recipients, Texts Texts);
 

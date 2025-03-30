@@ -6,12 +6,13 @@ namespace MeercatMonitor;
 public class OnlineStatusStore
 {
     public Encoding TextEncoding { get; } = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
-    public int HistoryDisplayLimit { get; } = 24 * 60;
+    public int HistoryDisplayLimit { get; }
 
     public OnlineStatusStore(TestConfig testConfig, Config config, ILogger<OnlineStatusStore> log)
     {
         _testConfig = testConfig;
         _log = log;
+        HistoryDisplayLimit = config.HistoryDisplayLimit ?? 24 * 60;
 
         int? fillTestData = testConfig?.FillTestData;
 
