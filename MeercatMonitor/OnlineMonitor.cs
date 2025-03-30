@@ -54,7 +54,15 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
 
     private async Task CheckFtpAsync(ToMonitorAddress toMonitorAddress)
     {
-        var (hostname, port) = ParseFtpAddress(toMonitorAddress.Address);
+
+        if (!Uri.TryCreate(toMonitorAddress.Address, UriKind.Absolute, out var uri))
+        {
+            _log.LogWarning("Invalid FTP address will be ignored; must be a valid Uri but is `{TargetAddress}`", toMonitorAddress.Address);
+            return;
+        }
+
+        var hostname = uri.Host;
+        var port = uri.Port;
         _log.LogDebug("Testing FTP (TCP) {Hostname}:{Port}…", hostname, port);
 
         var sw = Stopwatch.StartNew();
@@ -81,16 +89,6 @@ internal class OnlineMonitor(Config config, NotificationService _notify, ILogger
             _log.LogWarning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}", hostname, port, ex.Message);
 
             UpdateStatus(toMonitorAddress, isOnline: false, sw.Elapsed);
-        }
-
-        static (string hostname, int port) ParseFtpAddress(string websiteAddress)
-        {
-            var parts = websiteAddress["ftp://".Length..].Split(":");
-            var hostname = parts[0];
-            // We should handle unexpected configured formats here
-            var port = int.Parse(parts[1]);
-
-            return (hostname, port);
         }
     }
 
