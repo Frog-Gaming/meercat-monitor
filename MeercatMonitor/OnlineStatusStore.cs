@@ -6,6 +6,7 @@ namespace MeercatMonitor;
 public class OnlineStatusStore
 {
     public Encoding TextEncoding { get; } = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+    public int HistoryDisplayLimit { get; } = 24 * 60;
 
     public OnlineStatusStore(TestConfig testConfig, Config config, ILogger<OnlineStatusStore> log)
     {
@@ -58,8 +59,6 @@ public class OnlineStatusStore
 
         _store[target] = list;
     }
-
-    private const int HistoryDisplayLimit = 24 * 60;
 
     private readonly Dictionary<MonitorTarget, List<Result>> _store = [];
     private readonly Dictionary<MonitorTarget, MonitorGroup> _mapping = [];
