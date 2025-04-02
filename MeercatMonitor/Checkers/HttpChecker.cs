@@ -32,6 +32,12 @@ public class HttpChecker(ILogger<HttpChecker> _log, StatusUpdater _statusUpdater
 
             _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed, ex.StatusCode is not null ? FormatStatusCode(ex.StatusCode.Value) : $"{ex.Message}; {ex.InnerException?.Message}");
         }
+        catch (TaskCanceledException ex)
+        {
+            _log.LogWarning(ex, "HTTP {TargetAddress} failed the uptime check with exception {ExceptionMessage}", target.Address, ex.Message + ex.InnerException?.Message);
+
+            _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed, "Timeout");
+        }
         catch (Exception ex)
         {
             _log.LogWarning(ex, "HTTP {TargetAddress} failed the uptime check with exception {ExceptionMessage}", target.Address, ex.Message + ex.InnerException?.Message);
