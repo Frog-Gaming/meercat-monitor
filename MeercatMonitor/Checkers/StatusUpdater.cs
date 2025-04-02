@@ -6,7 +6,7 @@ public class StatusUpdater(
     , OnlineStatusStore _statusStore
     )
 {
-    public void UpdateStatus(MonitorTarget target, bool isOnline, TimeSpan responseTime)
+    public void UpdateStatus(MonitorTarget target, bool isOnline, TimeSpan responseTime, string responseDetails)
     {
         _log.LogDebug("{TargetAddress} is {Status}", target.Address, isOnline ? "online" : "offline");
 
@@ -16,7 +16,7 @@ public class StatusUpdater(
         // Ignore the first visit - we only have online status *change* events
         if (!prevStates.Any())
         {
-            _statusStore.SetNow(target, newStatus, responseTime);
+            _statusStore.SetNow(target, newStatus, responseTime, responseDetails);
             return;
         }
 
@@ -26,6 +26,6 @@ public class StatusUpdater(
             _notify.HandleStatusChange(target, isOnline: newStatus == Status.Online);
         }
 
-        _statusStore.SetNow(target, newStatus, responseTime);
+        _statusStore.SetNow(target, newStatus, responseTime, responseDetails);
     }
 }

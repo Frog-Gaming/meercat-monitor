@@ -39,7 +39,8 @@ public class OnlineStatusStore
             var status = i % 4 == 0 ? Status.Offline : Status.Online;
             var time = DateTimeOffset.Now.AddMinutes(-10 * i);
             var responseTime = TimeSpan.FromMilliseconds(((i + 1) % 5) * 100);
-            Push(target, new(status, time, responseTime));
+            var responseDetails = i % 4 == 0 ? "KO" : "OK";
+            Push(target, new(status, time, responseTime, responseDetails));
         }
     }
 
@@ -68,7 +69,7 @@ public class OnlineStatusStore
 
     public IEnumerable<Result> GetValues(MonitorTarget key) => _store.TryGetValue(key, out var results) ? [.. results] : [];
 
-    public void SetNow(MonitorTarget key, Status status, TimeSpan responseTime) => Push(key, new Result(status, DateTimeOffset.Now, responseTime));
+    public void SetNow(MonitorTarget key, Status status, TimeSpan responseTime, string responseDetails) => Push(key, new Result(status, DateTimeOffset.Now, responseTime, responseDetails));
 
     private void Push(MonitorTarget key, Result result)
     {

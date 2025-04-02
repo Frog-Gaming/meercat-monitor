@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 
 namespace MeercatMonitor.Checkers;
 
@@ -23,13 +24,19 @@ public class HttpChecker(ILogger<HttpChecker> _log, StatusUpdater _statusUpdater
 
             var isOnline = res.IsSuccessStatusCode;
 
-            _statusUpdater.UpdateStatus(target, isOnline, sw.Elapsed);
+            _statusUpdater.UpdateStatus(target, isOnline, sw.Elapsed, FormatStatusCode(res.StatusCode));
+        }
+        catch (HttpRequestException ex)
+        {
+            _log.LogWarning(ex, "HTTP {TargetAddress} failed the uptime check with exception {ExceptionMessage}", target.Address, ex.Message + ex.InnerException?.Message);
+
+            _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed, ex.StatusCode is not null ? FormatStatusCode(ex.StatusCode.Value) : $"{ex.Message}; {ex.InnerException?.Message}");
         }
         catch (Exception ex)
         {
             _log.LogWarning(ex, "HTTP {TargetAddress} failed the uptime check with exception {ExceptionMessage}", target.Address, ex.Message + ex.InnerException?.Message);
-
-            _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed);
         }
     }
+
+    private static string FormatStatusCode(HttpStatusCode statusCode) => $"{(int)statusCode} {statusCode}";
 }

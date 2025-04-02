@@ -35,20 +35,20 @@ public class FtpChecker(ILogger<FtpChecker> _log, StatusUpdater _statusUpdater, 
                 stream.Close();
             }
 
-            _statusUpdater.UpdateStatus(target, isOnline: true, sw.Elapsed);
+            _statusUpdater.UpdateStatus(target, isOnline: true, sw.Elapsed, "");
         }
         catch (SocketException ex)
         {
             // Socket error codes see https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
             _log.LogWarning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}, socket error code {ErrorCode}", hostname, port, ex.Message, ex.ErrorCode);
 
-            _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed);
+            _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed, $"{ex.ErrorCode}; {ex.Message}");
         }
         catch (Exception ex)
         {
             _log.LogWarning(ex, "Failed to connect to ftp (tcp) {Hostname}:{Port}; Exception Message: {Message}", hostname, port, ex.Message);
 
-            _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed);
+            _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed, $"{ex.Message}; {ex.InnerException?.Message}");
         }
     }
 

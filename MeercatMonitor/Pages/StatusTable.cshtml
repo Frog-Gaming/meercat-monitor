@@ -23,7 +23,7 @@
           <div class="history">
               @foreach (var result in targetResults.Results)
               {
-                  var tooltip = $"{result.Time.ToString("u")} {result.ResponseTime.TotalMilliseconds:N0} ms";
+                  var tooltip = $"{result.Time.ToString("u")} {result.ResponseTime.TotalMilliseconds:N0} ms\n{result.ResponseDetails}";
                   var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds / 50):D}";
                   <div class="status @Formatter.GetOnlineClass(result.Status)"
                        title="@tooltip"
