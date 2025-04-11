@@ -11,19 +11,19 @@
         {
             <div class="status"><i>No result data available yet</i></div>
             var time = DateTimeOffset.Now;
-            <div class="time" title="state from"><time datetime="@time.ToString("u")">@time.ToString("u")</time></div>
+            <div class="time" title="state from"><time datetime="@time.ToString("u")">@time.ToString("g")</time></div>
         }
         else
         {
           var lastResult = targetResults.Results[^1];
 
           <div class="status">@Formatter.FormatText(lastResult.Status)</div>
-          <div class="time" title="state from"><time datetime="@lastResult.Time.ToString("u")">@lastResult.Time.ToString("u")</time></div>
+          <div class="time" title="state from"><time datetime="@lastResult.Time.ToString("u")">@lastResult.Time.ToString("g")</time></div>
 
           <div class="history">
               @foreach (var result in targetResults.Results)
               {
-                  var tooltip = $"{result.Time.ToString("u")} {result.ResponseTime.TotalMilliseconds:N0} ms\n{result.ResponseDetails}";
+                  var tooltip = $"{result.Time.ToString("g")} {result.ResponseTime.TotalMilliseconds:N0} ms\n{result.ResponseDetails}";
                   var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds / 50):D}";
                   <div class="status @Formatter.GetOnlineClass(result.Status)"
                        title="@tooltip"
