@@ -5,7 +5,10 @@
 @foreach (var targetResults in Model.Results)
 {
     <div class="status-grid">
-        <span class="target" title="@targetResults.Target.Address">@targetResults.Target.Name</span>
+        <span class="target" title="@targetResults.Target.Address">
+          @targetResults.Target.Name
+            <a href="@targetResults.Target.Address" aria-label="Link to website">↗️</a>
+        </span>
 
         @if (targetResults.Results.Length == 0)
         {
