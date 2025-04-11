@@ -6,7 +6,7 @@
 {
     <div class="status-grid">
         <span class="target" title="@targetResults.Target.Address">
-          @targetResults.Target.Name
+            @targetResults.Target.Name
             <a href="@targetResults.Target.Address" aria-label="Link to website">↗️</a>
         </span>
 
@@ -18,22 +18,27 @@
         }
         else
         {
-          var lastResult = targetResults.Results[^1];
+            var lastResult = targetResults.Results[^1];
 
-          <div class="status">@Formatter.FormatText(lastResult.Status)</div>
-          <div class="time" title="state from"><time datetime="@lastResult.Time.ToString("u")">@lastResult.Time.ToString("g")</time></div>
+            <div class="status">
+                @Formatter.FormatText(lastResult.Status)
+                <span class="status-info">
+                    ℹ️
+                    <span class="time" title="state from"><time datetime="@lastResult.Time.ToString("u")">@lastResult.Time.ToString("g")</time></span>
+                </span>
+            </div>
 
-          <div class="history">
-              @foreach (var result in targetResults.Results)
-              {
-                  var tooltip = $"{result.Time.ToString("g")} {result.ResponseTime.TotalMilliseconds:N0} ms\n{result.ResponseDetails}";
-                  var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds / 50):D}";
-                  <div class="status @Formatter.GetOnlineClass(result.Status)"
-                       title="@tooltip"
-                       style="height: @(heightPx)px">
-                  </div>
-              }
-          </div>
+            <div class="history">
+                @foreach (var result in targetResults.Results)
+                {
+                    var tooltip = $"{result.Time.ToString("g")} {result.ResponseTime.TotalMilliseconds:N0} ms\n{result.ResponseDetails}";
+                    var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds / 50):D}";
+                    <div class="status @Formatter.GetOnlineClass(result.Status)"
+                         title="@tooltip"
+                         style="height: @(heightPx)px">
+                    </div>
+                }
+            </div>
         }
     </div>
 }

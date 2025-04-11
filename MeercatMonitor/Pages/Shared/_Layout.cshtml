@@ -17,9 +17,12 @@
 
         .status-grid {
             display: grid;
-            grid-template: "name status time ." "history history history history";
-            gap: 1em;
+            grid-template: "name    status  .      "
+                           "history history history";
+            row-gap: 1em;
+            column-gap: 3em;
             justify-content: start;
+            align-items: baseline;
 
             margin-bottom: 2em;
         }
@@ -42,9 +45,23 @@
           background:red;
         }
 
+        .status-info {
+          vertical-align: super;
+        }
+
+        .status-info:hover .time {
+          opacity: 1;
+          width: 200px;
+        }
+
         .time {
-            grid-area: time;
             font-style: italic;
+            display: inline-block;
+            opacity: 0;
+            width: 0;
+            transition: opacity 1s, width 1s;
+            overflow: hidden;
+            white-space: nowrap;
         }
 
         .history {
