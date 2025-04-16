@@ -5,6 +5,7 @@
 @inject Config _config
 
 @{
+    var maxPxHeight = 64;
     var heightFactorPxPerMs = 320.0 / ((_config.CheckTimeoutS ?? 10.0) * 1000.0);
 }
 
@@ -39,9 +40,11 @@
                 {
                     var tooltip = $"{result.Time.ToString("g")} {result.ResponseTime.TotalMilliseconds:N0} ms\n{result.ResponseDetails}";
                     var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds * heightFactorPxPerMs):D}";
-                    <div class="status @Formatter.GetOnlineClass(result.Status)"
-                         title="@tooltip"
-                         style="height: @(heightPx)px">
+                    <div class="status-container" style="height: @(maxPxHeight)px">
+                      <div class="status @Formatter.GetOnlineClass(result.Status)"
+                           title="@tooltip"
+                           style="height: @(heightPx)px;">
+                      </div>
                     </div>
                 }
             </div>
