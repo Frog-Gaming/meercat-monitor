@@ -78,6 +78,11 @@
           align-items: end;
         }
 
+        .status-container:hover {
+          outline: 1px solid #82828230;
+          background-color: #82828230;
+        }
+
         .history .status {
             width: 1em;
             min-height: 4px;
@@ -93,7 +98,7 @@
     <div id="tooltip-overlay" popover="hint"></div>
     <script>
         const tt = document.getElementById('tooltip-overlay')
-        for (const x of document.querySelectorAll('.status[title]')){
+        for (const x of document.querySelectorAll('.status-container[title]')){
             x.addEventListener('mouseover', ev => {
                 tt.hidePopover()
                 const source = ev.target
