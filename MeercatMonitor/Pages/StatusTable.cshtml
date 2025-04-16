@@ -2,6 +2,12 @@
 @using static MeercatMonitor.OnlineStatusStore
 @model StatusPageModels.GroupResultsModel
 
+@inject Config _config
+
+@{
+    var heightFactorPxPerMs = 320.0 / ((_config.CheckTimeoutS ?? 10.0) * 1000.0);
+}
+
 @foreach (var targetResults in Model.Results)
 {
     <div class="status-grid">
@@ -32,7 +38,7 @@
                 @foreach (var result in targetResults.Results)
                 {
                     var tooltip = $"{result.Time.ToString("g")} {result.ResponseTime.TotalMilliseconds:N0} ms\n{result.ResponseDetails}";
-                    var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds / 50):D}";
+                    var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds * heightFactorPxPerMs):D}";
                     <div class="status @Formatter.GetOnlineClass(result.Status)"
                          title="@tooltip"
                          style="height: @(heightPx)px">
