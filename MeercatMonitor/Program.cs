@@ -27,7 +27,7 @@ builder.Services.AddSingleton(config);
 builder.Services.AddRazorPages();
 
 var isTest = args.Contains("--test");
-builder.Services.AddSingleton(new TestConfig(SendMonitorRequests: !isTest, SendEmails: true, FillTestData: isTest ? 100 : null));
+builder.Services.AddSingleton(new TestConfig(SendMonitorRequests: !isTest, SendEmails: true, FillTestData: isTest ? 10_000 : null));
 
 var host = builder.Build();
 host.UseStaticFiles();
