@@ -34,6 +34,7 @@
                     <span class="time" title="state from"><time datetime="@lastResult.Time.ToString("u")">@lastResult.Time.ToString("g")</time></span>
                 </span>
             </div>
+
             <div class="history">
                 @foreach (var dayResults in targetResults.Results.GroupBy(x => DateOnly.FromDateTime(x.Time.Date)))
                 {
