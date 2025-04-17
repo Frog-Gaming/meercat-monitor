@@ -2,6 +2,14 @@ namespace MeercatMonitor.Pages
 {
     public static class Formatter
     {
+        public static string FormatTextSymbol(Status status) => status switch
+        {
+            Status.Unknown => "❔",
+            Status.Online => "✅",
+            Status.Offline => "🛑",
+            _ => throw new NotImplementedException(),
+        };
+
         public static string FormatText(Status status) => status switch
         {
             Status.Unknown => "(?)",
