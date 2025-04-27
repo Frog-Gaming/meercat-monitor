@@ -3,7 +3,6 @@
     Layout = "_Layout";
 }
 @namespace MeercatMonitor.Pages
-@using static MeercatMonitor.OnlineStatusStore
 @model GroupPageModel
 @{
     ViewData["Title"] = Model.GroupResults is null ? "Online Status" : $"{Model.GroupResults.Group.Name} Online Status";
