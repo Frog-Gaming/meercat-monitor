@@ -8,11 +8,11 @@
     <link rel="icon" href="~/favicon-64.avif" />
     <style>
         :root {
-          padding: 0 1em;
+            padding: 0 1em;
         }
 
         a {
-          text-decoration: none;
+            text-decoration: none;
         }
 
         .targets-summary {
@@ -22,12 +22,11 @@
         .status-grid {
             display: grid;
             grid-template: "name    status  .      "
-                           "history history history";
+                "history history history";
             row-gap: 1em;
             column-gap: 3em;
             justify-content: start;
             align-items: baseline;
-
             margin-bottom: 2em;
         }
 
@@ -42,20 +41,22 @@
         .status-grid > .status {
             grid-area: status;
         }
+
         .status.online {
-          background: green;
+            background: green;
         }
+
         .status.offline {
-          background:red;
+            background: red;
         }
 
         .status-info {
-          vertical-align: super;
+            vertical-align: super;
         }
 
         .status-info:hover .time {
-          opacity: 1;
-          width: 200px;
+            opacity: 1;
+            width: 200px;
         }
 
         .time {
@@ -72,16 +73,15 @@
             grid-area: history;
             border-left: 1px solid #66666688;
             padding-left: 0.5em;
-
             display: grid;
             grid-template-columns: 1fr;
         }
 
         .history-day {
-          border-left: 1px solid #66666688;
+            border-left: 1px solid #66666688;
             border-bottom: 1px solid #66666644;
-          padding: 0.5em 1em;
-          margin: 0.2em 0;
+            padding: 0.5em 1em;
+            margin: 0.2em 0;
         }
 
         .day-history {
@@ -92,13 +92,13 @@
         }
 
         .status-container {
-          display: flex;
-          align-items: end;
+            display: flex;
+            align-items: end;
         }
 
         .status-container:hover {
-          outline: 1px solid #82828230;
-          background-color: #82828230;
+            outline: 1px solid #82828230;
+            background-color: #82828230;
         }
 
         .history .status {
