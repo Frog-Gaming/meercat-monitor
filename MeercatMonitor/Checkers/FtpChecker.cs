@@ -40,13 +40,13 @@ public class FtpChecker(ILogger<FtpChecker> _log, StatusUpdater _statusUpdater, 
         catch (SocketException ex)
         {
             // Socket error codes see https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
-            _log.LogWarning(ex, "TCP connect failed {Hostname}:{Port}; Exception Message: {Message}, socket error code {ErrorCode}", hostname, port, ex.Message, ex.ErrorCode);
+            _log.LogDebug(ex, "TCP connect failed {Hostname}:{Port}; Exception Message: {Message}, socket error code {ErrorCode}", hostname, port, ex.Message, ex.ErrorCode);
 
             _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed, $"{ex.ErrorCode}; {ex.Message}");
         }
         catch (Exception ex)
         {
-            _log.LogWarning(ex, "TCP connect failed {Hostname}:{Port}; Exception Message: {Message}", hostname, port, ex.Message);
+            _log.LogDebug(ex, "TCP connect failed {Hostname}:{Port}; Exception Message: {Message}", hostname, port, ex.Message);
 
             _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed, $"{ex.Message}; {ex.InnerException?.Message}");
         }
