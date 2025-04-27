@@ -8,6 +8,10 @@
     <link rel="icon" href="~/favicon-64.avif" />
     <style>
         :root {
+            --color-online: green;
+            --color-offline: red;
+            --color-bg-weak-hl: #66666688;
+            --color-bg-hl: #82828230;
             padding: 0 1em;
         }
 
@@ -43,11 +47,11 @@
         }
 
         .status.online {
-            background: green;
+            background: var(--color-online);
         }
 
         .status.offline {
-            background: red;
+            background: var(--color-offline);
         }
 
         .status-info {
@@ -71,15 +75,15 @@
 
         .history {
             grid-area: history;
-            border-left: 1px solid #66666688;
+            border-left: 1px solid var(--color-bg-weak-hl);
             padding-left: 0.5em;
             display: grid;
             grid-template-columns: 1fr;
         }
 
         .history-day {
-            border-left: 1px solid #66666688;
-            border-bottom: 1px solid #66666688;
+            border-left: 1px solid var(--color-bg-weak-hl);
+            border-bottom: 1px solid var(--color-bg-weak-hl);
             padding: 0.5em 1em;
             margin: 0.2em 0;
         }
@@ -97,8 +101,8 @@
         }
 
         .status-container:hover {
-            outline: 1px solid #82828230;
-            background-color: #82828230;
+            outline: 1px solid var(--color-bg-hl);
+            background-color: var(--color-bg-hl);
         }
 
         .history .status {
