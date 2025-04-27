@@ -17,15 +17,15 @@
 }
 else if (Model.GroupResults.Length == 1)
 {
-    @await Html.PartialAsync("StatusTable", Model.GroupResults.Single())
+    @await Html.PartialAsync("GroupResultsView", Model.GroupResults.Single())
 }
 else
 {
     <div class="group">
-        @foreach (var x in @Model.GroupResults)
-        {
-            <h2>@x.Group.Name</h2>
-            @await Html.PartialAsync("StatusTable", x)
-        }
+    @foreach (var x in @Model.GroupResults)
+    {
+        <h2>@x.Group.Name</h2>
+        @await Html.PartialAsync("GroupResultsView", x)
+    }
     </div>
 }
