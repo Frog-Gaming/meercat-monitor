@@ -11,60 +11,66 @@
 
 @if (Model.Results.Length > 1)
 {
-    <p>Targets: @string.Join(", ", Model.Results.Select(x => (x.Results.Length == 0 ? "❔" : Formatter.FormatTextSymbol(x.Results[^1].Status)) + x.Target.Name))</p>
+    <div class="targets-summary">
+        Overview: @string.Join(", ", Model.Results.Select(x => (x.Results.Length == 0 ? "❔" : Formatter.FormatTextSymbol(x.Results[^1].Status)) + x.Target.Name))
+    </div>
 }
 
-@foreach (var targetResults in Model.Results)
-{
-    <div class="status-grid">
-        <span class="target" title="@targetResults.Target.Address">
-            @targetResults.Target.Name
-            <a href="@targetResults.Target.Address" aria-label="Link to website">↗️</a>
-        </span>
-
-        @if (targetResults.Results.Length == 0)
-        {
-            <div class="status"><i>No result data available yet</i></div>
-            var time = DateTimeOffset.Now;
-            <div class="time" title="state from"><time datetime="@time.ToString("u")">@time.ToString("g")</time></div>
-        }
-        else
-        {
-            var lastResult = targetResults.Results[^1];
-
-            <div class="status">
-                @Formatter.FormatText(lastResult.Status)
-                <span class="status-info">
-                    ℹ️
-                    <span class="time" title="state from"><time datetime="@lastResult.Time.ToString("u")">@lastResult.Time.ToString("g")</time></span>
+<div class="targets">
+    @foreach (var targetResults in Model.Results)
+    {
+        <div class="target">
+            <div class="status-grid">
+                <span class="target" title="@targetResults.Target.Address">
+                    @targetResults.Target.Name
+                    <a href="@targetResults.Target.Address" aria-label="Link to website">↗️</a>
                 </span>
-            </div>
 
-            <div class="history">
-                @foreach (var dayResults in targetResults.Results.GroupBy(x => DateOnly.FromDateTime(x.Time.Date)))
+                @if (targetResults.Results.Length == 0)
                 {
-                    <div class="history-day">
-                        <div>@dayResults.Key.ToString("yyyy-MM-dd ddd")</div>
-                        <div class="day-history">
-                            @foreach (var result in dayResults)
-                            {
-                                var tooltip = $"{result.Time.ToString("g")} {result.ResponseTime.TotalMilliseconds:N0} ms\n{result.ResponseDetails}";
-                                var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds * heightFactorPxPerMs):D}";
-                                <div class="status-container" title="@tooltip" style="height: @(maxPxHeight)px;">
-                                    <div class="status @Formatter.GetOnlineClass(result.Status)"
-                                    @*
+                    <div class="status"><i>No result data available yet</i></div>
+                    var time = DateTimeOffset.Now;
+                    <div class="time" title="state from"><time datetime="@time.ToString("u")">@time.ToString("g")</time></div>
+                }
+                else
+                {
+                    var lastResult = targetResults.Results[^1];
+
+                    <div class="status">
+                        @Formatter.FormatText(lastResult.Status)
+                        <span class="status-info">
+                            ℹ️
+                            <span class="time" title="state from"><time datetime="@lastResult.Time.ToString("u")">@lastResult.Time.ToString("g")</time></span>
+                        </span>
+                    </div>
+
+                    <div class="history">
+                        @foreach (var dayResults in targetResults.Results.GroupBy(x => DateOnly.FromDateTime(x.Time.Date)))
+                        {
+                            <div class="history-day">
+                                <div>@dayResults.Key.ToString("yyyy-MM-dd ddd")</div>
+                                <div class="day-history">
+                                    @foreach (var result in dayResults)
+                                    {
+                                        var tooltip = $"{result.Time.ToString("g")} {result.ResponseTime.TotalMilliseconds:N0} ms\n{result.ResponseDetails}";
+                                        var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds * heightFactorPxPerMs):D}";
+                                        <div class="status-container" title="@tooltip" style="height: @(maxPxHeight)px;">
+                                            <div class="status @Formatter.GetOnlineClass(result.Status)"
+                                            @*
                                       this solution sucks, why do I need another title
                                       the tooltip event handler is this element for some reason so we add title here - again
                                     *@
-                                         title="@tooltip"
-                                         style="height: @(heightPx)px;">
-                                    </div>
+                                                 title="@tooltip"
+                                                 style="height: @(heightPx)px;">
+                                            </div>
+                                        </div>
+                                    }
                                 </div>
-                            }
-                        </div>
+                            </div>
+                        }
                     </div>
                 }
             </div>
-        }
-    </div>
-}
+        </div>
+    }
+</div>
