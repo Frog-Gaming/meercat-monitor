@@ -34,12 +34,16 @@ public class OnlineStatusStore
 
     private void FillTestData(MonitorTarget target, int fillTestData)
     {
+        Status[] statuses = [Status.Online, Status.Online, Status.Online, Status.Online, Status.Offline, Status.Offline,];
+        int[] respTimesMs = [40, 50, 45, 200, 100, 10_123];
+        string[] details = ["", "OK", "OK", "OK", "Err various", "⏱ Timeout",];
+
         for (var i = fillTestData; i > 0; i--)
         {
-            var status = i % 4 == 0 ? Status.Offline : Status.Online;
+            var status = statuses[i % statuses.Length];
             var time = DateTimeOffset.Now.AddMinutes(-10 * i);
-            var responseTime = TimeSpan.FromMilliseconds(((i + 1) % 5) * 100);
-            var responseDetails = i % 4 == 0 ? "Err various" : "OK";
+            var responseTime = TimeSpan.FromMilliseconds(respTimesMs[i % respTimesMs.Length]);
+            var responseDetails = details[i % details.Length];
             Push(target, new(status, time, responseTime, responseDetails));
         }
     }
