@@ -33,7 +33,15 @@ var host = builder.Build();
 host.UseStaticFiles();
 host.UseRouting();
 host.MapRazorPages();
-//host.UseDeveloperExceptionPage();
+if (host.Environment.IsDevelopment())
+{
+    host.UseDeveloperExceptionPage();
+}
+else
+{
+    //host.UseExceptionHandler("/Error");
+    //host.UseHsts();
+}
 await host.RunAsync();
 
 static Config LoadConfigFile()
