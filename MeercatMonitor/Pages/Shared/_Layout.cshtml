@@ -8,15 +8,23 @@
     <link rel="icon" href="~/favicon-64.avif" />
     <style>
         :root {
+            --color-bg: light-dark(white, black);
             --color-online: green;
             --color-offline: red;
             --color-bg-weak-hl: #66666688;
             --color-bg-hl: #82828230;
             padding: 0 1em;
+            background: var(--color-bg);
         }
 
         a {
             text-decoration: none;
+        }
+
+        .group-title {
+            position: sticky;
+            top: 0;
+            background: var(--color-bg);
         }
 
         .targets-summary {
