@@ -14,17 +14,10 @@
 {
     <p><i>No monitors configured - no status known</i></p>
 }
-else if (Model.GroupResults.Length == 1)
-{
-    @await Html.PartialAsync("GroupResultsView", Model.GroupResults.Single())
-}
 else
 {
-    <div class="group">
     @foreach (var x in @Model.GroupResults)
     {
-        <h2>@x.Group.Name</h2>
-        @await Html.PartialAsync("GroupResultsView", x)
+        @await Html.PartialAsync("_GroupView", x)
     }
-    </div>
 }

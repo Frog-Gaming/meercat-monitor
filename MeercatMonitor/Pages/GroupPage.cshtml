@@ -8,14 +8,12 @@
     ViewData["Title"] = Model.GroupResults is null ? "Online Status" : $"{Model.GroupResults.Group.Name} Online Status";
 }
 
-<div class="group">
-    <h1>@ViewData["Title"]</h1>
-    @if (Model.GroupResults is null)
-    {
-        <p>Not found</p>
-    }
-    else
-    {
-        @await Html.PartialAsync("GroupResultsView", Model.GroupResults)
-    }
-</div>
+<h1>@ViewData["Title"]</h1>
+@if (Model.GroupResults is null)
+{
+    <p>Not found</p>
+}
+else
+{
+    @await Html.PartialAsync("_GroupView", Model.GroupResults)
+}
