@@ -27,7 +27,7 @@ public class FtpChecker(ILogger<FtpChecker> _log, StatusUpdater _statusUpdater, 
             {
                 _log.LogDebug("TCP connect failed; Timeout {Timeout} s", Timeout.TotalSeconds);
 
-                _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed, "Timeout");
+                _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed, "⏱ Timeout");
                 return;
             }
 

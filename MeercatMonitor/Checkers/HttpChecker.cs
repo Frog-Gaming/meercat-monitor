@@ -36,7 +36,7 @@ public class HttpChecker(ILogger<HttpChecker> _log, StatusUpdater _statusUpdater
         {
             _log.LogWarning(ex, "HTTP {TargetAddress} failed the uptime check with exception {ExceptionMessage}", target.Address, ex.Message + ex.InnerException?.Message);
 
-            _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed, "Timeout");
+            _statusUpdater.UpdateStatus(target, isOnline: false, sw.Elapsed, "⏱ Timeout");
         }
         catch (Exception ex)
         {
