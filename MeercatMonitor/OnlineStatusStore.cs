@@ -39,7 +39,7 @@ public class OnlineStatusStore
             var status = i % 4 == 0 ? Status.Offline : Status.Online;
             var time = DateTimeOffset.Now.AddMinutes(-10 * i);
             var responseTime = TimeSpan.FromMilliseconds(((i + 1) % 5) * 100);
-            var responseDetails = i % 4 == 0 ? "KO" : "OK";
+            var responseDetails = i % 4 == 0 ? "Err various" : "OK";
             Push(target, new(status, time, responseTime, responseDetails));
         }
     }
