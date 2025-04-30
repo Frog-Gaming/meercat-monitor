@@ -31,27 +31,21 @@
             margin-bottom: 1em;
         }
 
-        .status-grid {
-            display: grid;
-            grid-template: "name    status  .      "
-                "history history history";
-            row-gap: 1em;
-            column-gap: 3em;
-            justify-content: start;
-            align-items: baseline;
+        .target {
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
             margin-bottom: 2em;
         }
 
-        .status-grid > * {
-            justify-self: start;
-        }
-
-        .status-grid > .target {
-            grid-area: name;
-        }
-
-        .status-grid > .status {
-            grid-area: status;
+        .target-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2em;
+            position: sticky;
+            top: 28px;
+            background: var(--color-bg);
+            padding-bottom: 0.5em;
         }
 
         .status.online {
@@ -82,7 +76,6 @@
         }
 
         .history {
-            grid-area: history;
             border-left: 1px solid var(--color-bg-weak-hl);
             padding-left: 0.5em;
             display: grid;
