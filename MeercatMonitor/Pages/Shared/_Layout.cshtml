@@ -10,7 +10,7 @@
         :root {
             --color-bg: light-dark(white, black);
             --color-online: green;
-            --color-offline: red;
+            --color-offline: #880000;
             --color-bg-weak-hl: #66666688;
             --color-bg-hl: #82828230;
             padding: 0 1em;
@@ -111,6 +111,14 @@
         .status-container:hover {
             outline: 1px solid var(--color-bg-hl);
             background-color: var(--color-bg-hl);
+        }
+
+        .status-container:hover .status.online {
+            filter: brightness(2);
+        }
+
+        .status-container:hover .status.offline {
+            filter: brightness(2);
         }
 
         .history .status {
