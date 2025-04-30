@@ -10,8 +10,10 @@
         Result? lastResult = Model.Results.Length != 0 ? Model.Results[^1] : null;
     }
     <div class="target-header" title="@Model.Target.Address">
-        @Model.Target.Name
-        <a href="@Model.Target.Address" aria-label="Link to website">↗️</a>
+        <div>
+            @Model.Target.Name
+            <a href="@Model.Target.Address" aria-label="Link to website">↗️</a>
+        </div>
         <div class="status">
             @(lastResult == null ? Html.Raw("<i>No result data available yet</i>") : Formatter.FormatText(lastResult.Status))
             <span class="status-info">
