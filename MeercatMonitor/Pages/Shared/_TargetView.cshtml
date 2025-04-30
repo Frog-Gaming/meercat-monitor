@@ -5,7 +5,7 @@
     var heightFactorPxPerMs = 320.0 / ((_config.CheckTimeoutS ?? 10.0) * 1000.0);
 }
 
-<div class="target">
+<div class="target" id="@Model.Target.Slug">
     @{
         Result? lastResult = Model.Results.Length != 0 ? Model.Results[^1] : null;
     }

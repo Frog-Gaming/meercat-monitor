@@ -5,7 +5,14 @@
     @if (Model.Results.Length > 1)
     {
         <div class="targets-summary">
-            Overview: @string.Join(", ", Model.Results.Select(x => (x.Results.Length == 0 ? "❔" : Formatter.FormatTextSymbol(x.Results[^1].Status)) + x.Target.Name))
+            Overview:
+            @foreach (var x in Model.Results)
+            {
+                <a href="#@x.Target.Slug" class="target-jump-link">
+                    @Formatter.FormatTextSymbol(x.Results.Length == 0 ? Status.Unknown : x.Results[^1].Status)
+                    @x.Target.Name
+                </a>
+            }
         </div>
     }
 
