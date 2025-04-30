@@ -34,8 +34,17 @@
                 <div class="history-day">
                     <div>@dayResults.Key.ToString("yyyy-MM-dd ddd")</div>
                     <div class="day-history">
+                        @{
+                            DateTimeOffset? lastResultTime = null;
+                        }
                         @foreach (var result in dayResults)
                         {
+                            if(lastResultTime != null && result.Time.Hour != lastResultTime.Value.Hour)
+                            {
+                                <div class="new-hour" style="height: @(maxPxHeight)px;"></div>
+                            }
+                            lastResultTime = result.Time;
+
                             var tooltip = $"{result.Time.ToString("g")} {result.ResponseTime.TotalMilliseconds:N0} ms\n{result.ResponseDetails}";
                             var heightPx = $"{(int)(result.ResponseTime.TotalMilliseconds * heightFactorPxPerMs):D}";
                             <div class="status-container" title="@tooltip" style="height: @(maxPxHeight)px;">
@@ -44,8 +53,8 @@
                                   this solution sucks, why do I need another title
                                   the tooltip event handler is this element for some reason so we add title here - again
                                 *@
-                                     title="@tooltip"
-                                     style="height: @(heightPx)px;">
+                                title="@tooltip"
+                                style="height: @(heightPx)px;">
                                 </div>
                             </div>
                         }

@@ -13,6 +13,7 @@
             --color-offline: #880000;
             --color-bg-weak-hl: #66666688;
             --color-bg-hl: #82828230;
+            --color-hour-separator: #848484a1;
             padding: 0 1em;
             background: var(--color-bg);
         }
@@ -124,6 +125,10 @@
 
         .status-container:hover .status.offline {
             filter: brightness(2);
+        }
+
+        .new-hour {
+          border-right: 1px solid var(--color-hour-separator);
         }
 
         .history .status {
