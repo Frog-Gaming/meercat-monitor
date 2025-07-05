@@ -3,7 +3,7 @@ using System.Net;
 
 namespace MeercatMonitor.Checkers;
 
-public class HttpChecker(ILogger<HttpChecker> _log, StatusUpdater _statusUpdater) : IChecker
+public class HttpChecker(ILogger<HttpChecker> _log, StatusUpdater _statusUpdater, IHttpClientFactory _httpFact) : IChecker
 {
     public TimeSpan Timeout { get; } = TimeSpan.FromSeconds(10);
 
@@ -16,7 +16,7 @@ public class HttpChecker(ILogger<HttpChecker> _log, StatusUpdater _statusUpdater
         var sw = Stopwatch.StartNew();
         try
         {
-            using HttpClient c = new();
+            using var c = _httpFact.CreateClient();
             c.Timeout = Timeout;
 
             HttpRequestMessage req = new(HttpMethod.Head, target.Address);

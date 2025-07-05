@@ -15,6 +15,7 @@ if (args.Length > 0 && args[0].StartsWith(testArg))
 }
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddHttpClient();
 builder.Services.AddHostedService<OnlineMonitor>();
 builder.Services.AddSingleton<NotificationService>();
 builder.Services.AddSingleton<EmailSender>();
