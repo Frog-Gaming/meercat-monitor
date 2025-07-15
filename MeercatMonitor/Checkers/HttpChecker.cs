@@ -61,7 +61,7 @@ public class HttpChecker(ILogger<HttpChecker> _log, StatusUpdater _statusUpdater
         }
         catch (Exception ex)
         {
-            _log.LogWarning(ex, "HTTP {TargetAddress} failed the uptime check with exception {ExceptionMessage}", target.Address, ex.Message + ex.InnerException?.Message);
+            _log.LogWarning(ex, "HTTP {TargetAddress} failed the uptime check with unexpected exception {ExceptionMessage}", target.Address, ex.Message + ex.InnerException?.Message);
             return null;
         }
     }
