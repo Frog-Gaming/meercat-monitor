@@ -33,7 +33,7 @@ public class FtpChecker(ILogger<FtpChecker> _log, StatusUpdater _statusUpdater, 
 
             if (OpenStream)
             {
-                using var stream = tcp.GetStream();
+                await using var stream = tcp.GetStream();
                 stream.Close();
             }
 
