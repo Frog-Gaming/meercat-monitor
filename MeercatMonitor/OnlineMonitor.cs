@@ -11,7 +11,7 @@ internal class OnlineMonitor(Config config
 {
     private readonly PeriodicTimer _timer = new(TimeSpan.FromSeconds(config.CheckIntervalS));
     // Distinct() across groups and also work around duplicate config list values
-    private readonly MonitorTarget[] _monitorTargets = config.Monitors.SelectMany(x => x.Targets).Distinct().ToArray();
+    private readonly MonitorTarget[] _monitorTargets = [.. config.Monitors.SelectMany(x => x.Targets).Distinct()];
 
     private async Task CheckAsync(MonitorTarget target)
     {
