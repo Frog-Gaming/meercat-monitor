@@ -8,6 +8,7 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.13.1" />
     <PackageVersion Include="Serilog" Version="4.3.0" />
     <PackageVersion Include="Serilog.Extensions.Hosting" Version="9.0.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
