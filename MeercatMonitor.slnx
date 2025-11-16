@@ -13,6 +13,7 @@
   <Folder Name="/Solution Items/docs/">
     <File Path="docs/overview.md" />
   </Folder>
+  <Project Path="MeercatMonitor.Tests/MeercatMonitor.Tests.csproj" />
   <Project Path="MeercatMonitor/MeercatMonitor.csproj" />
   <Project Path="TcpClient/TcpClient.csproj" />
   <Project Path="TcpServer/TcpServer.csproj" />
