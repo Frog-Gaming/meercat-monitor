@@ -16,4 +16,11 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory artifacts/test-results
+    - name: Test Results Upload
+      uses: actions/upload-artifact@v5
+      with:
+          name: test-results
+          path: "artifacts/test-results/"
+          retention-days: 1
+          if-no-files-found: error
