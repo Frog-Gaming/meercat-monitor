@@ -98,7 +98,7 @@ public class EmailSender(Config _config, TestConfig _testConfig)
             BodyHtmlWentOnline: "<p>🐿️🥜 Your website {TargetAddress} is <strong>up</strong> again. lol 👌</p>",
             BodyHtmlWentOffline: "<p>🐿️🥜 Your website {TargetAddress} is <strong>down</strong>. lol 👌</p>"
         );
-        SetMessageText(message, new MonitorTarget("<fake website name>", "<fake-slug>", new Uri("http://<fake-website-for-testing>")), websiteIsOnline: true, texts);
+        SetMessageText(message, new MonitorTarget("<fake website name>", "<fake-slug>", new Uri("http://fake.localhost")), websiteIsOnline: true, texts);
 
         Send(message, config);
     }
